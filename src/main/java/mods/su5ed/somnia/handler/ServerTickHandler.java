@@ -1,19 +1,21 @@
 package mods.su5ed.somnia.handler;
 
-import mods.su5ed.somnia.config.SomniaConfig;
+import mods.su5ed.somnia.core.Somnia;
+import mods.su5ed.somnia.core.duck.PlayerDuck;
+import mods.su5ed.somnia.mixin.accessor.MinecraftServerAccessor;
 import mods.su5ed.somnia.network.NetworkHandler;
-import mods.su5ed.somnia.network.packet.PacketUpdateSpeed;
-import mods.su5ed.somnia.network.packet.PacketWakeUpPlayer;
 import mods.su5ed.somnia.util.State;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.network.play.server.SUpdateTimePacket;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.fml.hooks.BasicEventHooks;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.protocol.game.ClientboundSetTimePacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.GameRules;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -23,20 +25,20 @@ import static mods.su5ed.somnia.util.State.SIMULATING;
 public class ServerTickHandler {
 	public static final List<ServerTickHandler> HANDLERS = new ArrayList<>();
 	private static int tickHandlers = 0;
-	public ServerWorld worldServer;
+	public final ServerLevel levelServer;
 	public State currentState;
 	private int timer = 0;
 	private double overflow = 0,
-				   multiplier = SomniaConfig.baseMultiplier;
+				   multiplier = Somnia.CONFIG.logic.baseMultiplier;
 	
-	public ServerTickHandler(ServerWorld worldServer) {
-		this.worldServer = worldServer;
+	public ServerTickHandler(ServerLevel levelServer) {
+		this.levelServer = levelServer;
 	}
 	
 	public void tickEnd() {
 		if (++timer == 10) {
 			timer = 0;
-			State state = State.forWorld(worldServer);
+			State state = State.forWorld(levelServer);
 			
 			if (state != currentState) {
 				if (currentState == SIMULATING) {
@@ -47,7 +49,12 @@ public class ServerTickHandler {
 			}
 			
 			if (state == SIMULATING || state == State.WAITING) {
-				NetworkHandler.sendToDimension(new PacketUpdateSpeed(state == SIMULATING ? multiplier + overflow : 0), worldServer.dimension());
+				FriendlyByteBuf buf = PacketByteBufs.create();
+				buf.writeDouble(state == SIMULATING ? multiplier + overflow : 0);
+
+				for (ServerPlayer player : levelServer.getPlayers(p -> p.level.dimension() == levelServer.dimension())) {
+					ServerPlayNetworking.send(player, NetworkHandler.UPDATE_SPEED, buf);
+				}
 			}
 
 			this.currentState = state;
@@ -57,11 +64,15 @@ public class ServerTickHandler {
 	}
 	
 	private void closeGuiWithMessage(@Nullable String key) {
-		worldServer.players().stream()
+		levelServer.players().stream()
 				.filter(LivingEntity::isSleeping)
-				.forEach(player -> {
-					NetworkHandler.sendToClient(new PacketWakeUpPlayer(), player);
-					if (key != null) player.sendMessage(new TranslationTextComponent("somnia.status." + key), UUID.randomUUID());
+				.forEach(p -> {
+					FriendlyByteBuf buf = PacketByteBufs.create();
+					ServerPlayNetworking.send(p, NetworkHandler.WAKE_UP_PLAYER, buf);
+
+					if (key != null) {
+						p.sendMessage(new TranslatableComponent("somnia.status." + key), UUID.randomUUID());
+					}
 				});
 	}
 
@@ -74,23 +85,22 @@ public class ServerTickHandler {
 
 		for (int i = 0; i < flooredTarget; i++) doMultipliedServerTicking();
 
-		multiplier += (System.currentTimeMillis() - timeMillis <= SomniaConfig.delta / tickHandlers) ? 0.1 : -0.1;
+		multiplier += (System.currentTimeMillis() - timeMillis <= Somnia.CONFIG.logic.delta / tickHandlers) ? 0.1 : -0.1;
 		
-		if (multiplier > SomniaConfig.multiplierCap) multiplier = SomniaConfig.multiplierCap;
-		if (multiplier < SomniaConfig.baseMultiplier) multiplier = SomniaConfig.baseMultiplier;
+		if (multiplier > Somnia.CONFIG.logic.multiplierCap) multiplier = Somnia.CONFIG.logic.multiplierCap;
+		if (multiplier < Somnia.CONFIG.logic.baseMultiplier) multiplier = Somnia.CONFIG.logic.baseMultiplier;
 	}
 	
 	private void doMultipliedServerTicking() {
-		BasicEventHooks.onPreWorldTick(worldServer);
+		//BasicEventHooks.onPreWorldTick(levelServer);
 
-		worldServer.players().stream()
-				.map(player -> new TickEvent.PlayerTickEvent(TickEvent.Phase.START, player))
-				.forEach(ForgeEventHandler::onPlayerTick);
+		levelServer.players().stream()
+				.map(player -> (PlayerDuck) player)
+				.forEach(PlayerDuck::posTick);
+		levelServer.tick(() -> ((MinecraftServerAccessor) levelServer.getServer()).somnia$invokeHaveTime());
 
-		worldServer.tick(worldServer.getServer()::haveTime);
+		levelServer.getServer().getPlayerList().broadcastAll(new ClientboundSetTimePacket(levelServer.getGameTime(), levelServer.getDayTime(), levelServer.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)), levelServer.dimension());
 
-		worldServer.getServer().getPlayerList().broadcastAll(new SUpdateTimePacket(worldServer.getGameTime(), worldServer.getDayTime(), worldServer.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)), worldServer.dimension());
-
-		BasicEventHooks.onPostWorldTick(worldServer);
+		//BasicEventHooks.onPostWorldTick(levelServer);
 	}
 }

@@ -2,25 +2,38 @@ package mods.su5ed.somnia.core;
 
 import mods.su5ed.somnia.object.AwakeningEffect;
 import mods.su5ed.somnia.object.InsomniaEffect;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Potion;
-import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.Registry;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.item.alchemy.Potion;
 
 public class SomniaObjects {
-    static final DeferredRegister<Effect> EFFECTS = DeferredRegister.create(ForgeRegistries.POTIONS, Somnia.MODID);
-    static final DeferredRegister<Potion> POTIONS = DeferredRegister.create(ForgeRegistries.POTION_TYPES, Somnia.MODID);
+    public static final MobEffect AWAKENING_EFFECT = new AwakeningEffect();
+    public static final MobEffect INSOMNIA_EFFECT = new InsomniaEffect();
+    public static final Potion AWAKENING_POTION = new Potion("awakening", new MobEffectInstance(AWAKENING_EFFECT, 2400));
+    public static final Potion LONG_AWAKENING_POTION = new Potion("long_awakening", new MobEffectInstance(AWAKENING_EFFECT, 3600));
+    public static final Potion STRONG_AWAKENING_POTION = new Potion("strong_awakening", new MobEffectInstance(AWAKENING_EFFECT, 2400, 1));
 
-    public static final RegistryObject<Effect> AWAKENING_EFFECT = EFFECTS.register("awakening", AwakeningEffect::new);
-    public static final RegistryObject<Effect> INSOMNIA_EFFECT = EFFECTS.register("insomnia", InsomniaEffect::new);
+    public static final Potion INSOMNIA_POTION = new Potion("insomnia", new MobEffectInstance(INSOMNIA_EFFECT, 1800));
+    public static final Potion LONG_INSOMNIA_POTION = new Potion("long_insomnia", new MobEffectInstance(INSOMNIA_EFFECT, 3000));
+    public static final Potion STRONG_INSOMNIA_POTION = new Potion("strong_insomnia", new MobEffectInstance(INSOMNIA_EFFECT, 1800, 1));
 
-    public static final RegistryObject<Potion> AWAKENING_POTION = POTIONS.register("awakening", () -> new Potion("awakening", new EffectInstance(AWAKENING_EFFECT.get(), 2400)));
-    public static final RegistryObject<Potion> LONG_AWAKENING_POTION = POTIONS.register("long_awakening", () -> new Potion("awakening", new EffectInstance(AWAKENING_EFFECT.get(), 3600)));
-    public static final RegistryObject<Potion> STRONG_AWAKENING_POTION = POTIONS.register("strong_awakening", () -> new Potion("awakening", new EffectInstance(AWAKENING_EFFECT.get(), 2400, 1)));
+    public static void init() {
+        registerEffect("awakening", AWAKENING_EFFECT);
+        registerEffect("insomnia", INSOMNIA_EFFECT);
+        registerPotion(AWAKENING_POTION);
+        registerPotion(LONG_AWAKENING_POTION);
+        registerPotion(STRONG_AWAKENING_POTION);
+        registerPotion(INSOMNIA_POTION);
+        registerPotion(LONG_INSOMNIA_POTION);
+        registerPotion(STRONG_INSOMNIA_POTION);
+    }
 
-    public static final RegistryObject<Potion> INSOMNIA_POTION = POTIONS.register("insomnia", () -> new Potion("insomnia", new EffectInstance(INSOMNIA_EFFECT.get(), 1800)));
-    public static final RegistryObject<Potion> LONG_INSOMNIA_POTION = POTIONS.register("long_insomnia", () -> new Potion("insomnia", new EffectInstance(INSOMNIA_EFFECT.get(), 3000)));
-    public static final RegistryObject<Potion> STRONG_INSOMNIA_POTION = POTIONS.register("strong_insomnia", () -> new Potion("insomnia", new EffectInstance(INSOMNIA_EFFECT.get(), 1800, 1)));
+    private static void registerPotion(Potion potion) {
+        Registry.register(Registry.POTION, Somnia.locate(potion.getName("")), potion);
+    }
+
+    private static void registerEffect(String id, MobEffect effect) {
+        Registry.register(Registry.MOB_EFFECT, Somnia.locate(id), effect);
+    }
 }

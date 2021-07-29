@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "somnia",
+  "version": "${version}",
+  "name": "Somnia Awoken",
+  "description": "Simulating the level while you sleep",
+  "icon": "logo.png",
+  "authors": [
+    "alkyaLy",
+    "Su5eD"
+  ],
+  "contact": {
+    "sources": "https://github.com/alkyaly/Somnia-Awoken",
+    "issues": "https://github.com/alkyaly/Somnia-Awoken/issues"
+  },
+
+  "license": "LGPLv3",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "mods.su5ed.somnia.core.Somnia"
+    ],
+    "client": [
+      "mods.su5ed.somnia.core.SomniaClient"
+    ],
+    "cardinal-components": [
+      "mods.su5ed.somnia.api.capability.Components"
+    ]
+  },
+  "mixins": [
+    "somnia.mixins.json"
+  ],
+  "custom": {
+    "cardinal-components": [
+      "somnia:fatigue"
+    ]
+  },
+
+  "depends": {
+    "fabricloader": ">=0.11.3",
+    "fabric": ">=0.36.0",
+    "java": ">=16",
+    "minecraft": ">=1.17"
+  }
+}

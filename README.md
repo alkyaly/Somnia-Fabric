@@ -1,5 +1,5 @@
 # Somnia
-A Minecraft mod that simulates the world while you sleep, initially released 2011.
+A Minecraft mod that simulates the level while you sleep, initially released 2011.
 
 <div align="center">
     <a href="https://github.com/Su5eD/Somnia/actions">
@@ -14,7 +14,7 @@ A Minecraft mod that simulates the world while you sleep, initially released 201
 </div>
 
 ## How it works
-Instead of skipping the night, the world is sped up while you sleep.
+Instead of skipping the night, the level is sped up while you sleep.
 You can now sleep at any time, as long as you have enough fatigue, which you gain passively over time. 
 Be careful - getting too tired gives you negative effects.
 

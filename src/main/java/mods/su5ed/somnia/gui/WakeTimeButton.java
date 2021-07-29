@@ -1,37 +1,51 @@
 package mods.su5ed.somnia.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import mods.su5ed.somnia.api.capability.CapabilityFatigue;
+import com.mojang.blaze3d.vertex.PoseStack;
+import mods.su5ed.somnia.api.capability.Components;
+import mods.su5ed.somnia.api.capability.IFatigue;
 import mods.su5ed.somnia.network.NetworkHandler;
-import mods.su5ed.somnia.network.packet.PacketActivateBlock;
-import mods.su5ed.somnia.network.packet.PacketUpdateWakeTime;
 import mods.su5ed.somnia.util.SomniaUtil;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 public class WakeTimeButton extends Button {
     private final String hoverText;
     private final String buttonText;
 
     public WakeTimeButton(int x, int y, int widthIn, int heightIn, String buttonText, long wakeTime) {
-        super(x, y, widthIn, heightIn, new StringTextComponent(buttonText), button -> {
+        super(x, y, widthIn, heightIn, new TextComponent(buttonText), button -> {
             Minecraft mc = Minecraft.getInstance();
             if (mc.level == null) return;
 
             long targetWakeTime = SomniaUtil.calculateWakeTime(mc.level.getGameTime(), (int) wakeTime);
-            NetworkHandler.INSTANCE.sendToServer(new PacketUpdateWakeTime(targetWakeTime));
-            mc.player.getCapability(CapabilityFatigue.FATIGUE_CAPABILITY)
-                    .ifPresent(props -> props.setWakeTime(targetWakeTime));
+            FriendlyByteBuf buf = PacketByteBufs.create();
+            buf.writeLong(targetWakeTime);
 
-            RayTraceResult mouseOver = mc.hitResult;
-            if (mouseOver instanceof BlockRayTraceResult) {
-                Vector3d hitVec = mouseOver.getLocation();
-                PacketActivateBlock packet = new PacketActivateBlock(((BlockRayTraceResult)mouseOver).getBlockPos(), ((BlockRayTraceResult)mouseOver).getDirection(), (float) hitVec.x, (float) hitVec.y, (float) hitVec.z);
-                NetworkHandler.INSTANCE.sendToServer(packet);
+            ClientPlayNetworking.send(NetworkHandler.UPDATE_WAKE_TIME, buf);
+
+            IFatigue props = Components.FATIGUE.getNullable(mc.player);
+
+            if (props != null) {
+                props.setWakeTime(targetWakeTime);
+            }
+            HitResult mouseOver = mc.hitResult;
+            if (mouseOver instanceof BlockHitResult bhr) {
+                Vec3 hitVec = mouseOver.getLocation();
+                FriendlyByteBuf byteBuf = PacketByteBufs.create();
+                byteBuf.writeBlockPos(bhr.getBlockPos());
+                byteBuf.writeVarInt(bhr.getDirection().get3DDataValue());
+                byteBuf.writeDouble(hitVec.x);
+                byteBuf.writeDouble(hitVec.y);
+                byteBuf.writeDouble(hitVec.z);
+
+                ClientPlayNetworking.send(NetworkHandler.ACTIVATE_BLOCK, byteBuf);
             }
 
             mc.setScreen(null);
@@ -41,8 +55,8 @@ public class WakeTimeButton extends Button {
     }
 
     @Override
-    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        super.renderButton(matrixStack, mouseX, mouseY, partialTicks);
-        this.setMessage(new StringTextComponent(this.isHovered ? this.hoverText : this.buttonText));
+    public void renderButton(PoseStack pose, int mouseX, int mouseY, float partialTicks) {
+        super.renderButton(pose, mouseX, mouseY, partialTicks);
+        this.setMessage(new TextComponent(this.isHovered ? this.hoverText : this.buttonText));
     }
 }

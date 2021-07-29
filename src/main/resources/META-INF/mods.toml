@@ -11,7 +11,7 @@ logoFile="logo.png"
 credits="MALfunction84 and Kingrunes, authors of the previous versions"
 authors="Su5eD"
 description='''
-Simulating the world while you sleep
+Simulating the level while you sleep
 '''
 [[dependencies.somnia]]
     modId="forge"

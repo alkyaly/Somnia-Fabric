@@ -1,53 +1,63 @@
 package mods.su5ed.somnia.util;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
-import mods.su5ed.somnia.api.capability.CapabilityFatigue;
-import mods.su5ed.somnia.config.SomniaConfig;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import mods.su5ed.somnia.api.capability.Components;
+import mods.su5ed.somnia.api.capability.IFatigue;
+import mods.su5ed.somnia.core.Somnia;
 import mods.su5ed.somnia.handler.ServerTickHandler;
 import mods.su5ed.somnia.network.NetworkHandler;
-import mods.su5ed.somnia.network.packet.PacketUpdateWakeTime;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameRules;
 import org.lwjgl.opengl.GL11;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("unused")
 public class ASMHooks {
-    public static boolean doMobSpawning(ServerWorld world) {
-        boolean spawnMobs = world.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING);
-        if (!SomniaConfig.disableCreatureSpawning || !spawnMobs) return spawnMobs;
+    public static final List<Monster> DUMMY_NON_EMPTY_LIST = new ArrayList<>() {{add(null);}};
+
+    public static boolean doMobSpawning(ServerLevel level) {
+        boolean spawnMobs = level.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING);
+        if (!Somnia.CONFIG.performance.disableCreatureSpawning || !spawnMobs) return spawnMobs;
 
         return ServerTickHandler.HANDLERS.stream()
-                .filter(handler -> handler.worldServer == world)
+                .filter(handler -> handler.levelServer == level)
                 .map(handler -> handler.currentState != State.SIMULATING)
                 .findAny()
-                .orElseThrow(() -> new IllegalStateException("Couldn't find tick handler for given world"));
+                .orElseThrow(() -> new IllegalStateException("Couldn't find tick handler for given level"));
     }
 
-    public static void updateWakeTime(PlayerEntity player) {
-        player.getCapability(CapabilityFatigue.FATIGUE_CAPABILITY)
-                .filter(props -> props.getWakeTime() < 0)
-                .ifPresent(props -> {
-                    long totalWorldTime = player.level.getGameTime();
-                    long wakeTime = SomniaUtil.calculateWakeTime(totalWorldTime, totalWorldTime % 24000 > 12000 ? 0 : 12000);
-                    props.setWakeTime(wakeTime);
-                    NetworkHandler.sendToClient(new PacketUpdateWakeTime(wakeTime), (ServerPlayerEntity) player);
-                });
-    }
+    public static void updateWakeTime(Player player) {
+        IFatigue props = Components.FATIGUE.getNullable(player);
 
-    public static boolean skipRenderWorld(float partialTicks, long finishTimeNano, MatrixStack stack) {
-        return DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> {
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.player.isSleeping() && SomniaConfig.disableRendering) {
-                GlStateManager._clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT, false);
-                return true;
+        if (props != null) {
+            if (props.getWakeTime() < 0) {
+                long totalWorldTime = player.level.getGameTime();
+                long wakeTime = SomniaUtil.calculateWakeTime(totalWorldTime, totalWorldTime % 24000 > 12000 ? 0 : 12000);
+                props.setWakeTime(wakeTime);
+
+                FriendlyByteBuf buf = PacketByteBufs.create();
+                buf.writeLong(wakeTime);
+                ServerPlayNetworking.send((ServerPlayer) player, NetworkHandler.UPDATE_WAKE_TIME, buf);
             }
-            return false;
-        });
+        }
+    }
+
+    public static boolean skipRenderWorld(float partialTicks, long finishTimeNano, PoseStack stack) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player.isSleeping() && Somnia.CONFIG.performance.disableRendering) {
+            RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT, false);
+            return true;
+        }
+        return false;
     }
 }

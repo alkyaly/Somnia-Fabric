@@ -1,26 +1,34 @@
 package mods.su5ed.somnia.gui;
 
-import mods.su5ed.somnia.api.capability.CapabilityFatigue;
+import mods.su5ed.somnia.api.capability.Components;
+import mods.su5ed.somnia.api.capability.IFatigue;
 import mods.su5ed.somnia.network.NetworkHandler;
-import mods.su5ed.somnia.network.packet.PacketResetSpawn;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.TextComponent;
 
 public class ResetSpawnButton extends Button {
     public boolean resetSpawn = true;
 
     public ResetSpawnButton(int xIn, int yIn, int widthIn, int heightIn) {
-        super(xIn, yIn, widthIn, heightIn, new StringTextComponent("Reset spawn: Yes"), button -> {
+        super(xIn, yIn, widthIn, heightIn, new TextComponent("Reset spawn: Yes"), button -> {
             ((ResetSpawnButton) button).resetSpawn = !((ResetSpawnButton) button).resetSpawn;
-            button.setMessage(new StringTextComponent("Reset spawn: "+(((ResetSpawnButton) button).resetSpawn ? "Yes" : "No")));
+            button.setMessage(new TextComponent("Reset spawn: "+(((ResetSpawnButton) button).resetSpawn ? "Yes" : "No")));
             Minecraft mc = Minecraft.getInstance();
             if (mc.player == null) return;
 
-            mc.player.getCapability(CapabilityFatigue.FATIGUE_CAPABILITY).ifPresent(props -> {
+            IFatigue props = Components.FATIGUE.getNullable(mc.player);
+
+            if (props != null) {
                 props.shouldResetSpawn(((ResetSpawnButton) button).resetSpawn);
-                NetworkHandler.INSTANCE.sendToServer(new PacketResetSpawn(props.resetSpawn()));
-            });
+                FriendlyByteBuf buf = PacketByteBufs.create();
+                buf.writeBoolean(props.resetSpawn());
+
+                ClientPlayNetworking.send(NetworkHandler.RESET_SPAWN, buf);
+            }
         });
     }
 }

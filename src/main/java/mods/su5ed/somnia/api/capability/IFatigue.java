@@ -1,9 +1,9 @@
 package mods.su5ed.somnia.api.capability;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.common.util.INBTSerializable;
+import dev.onyxstudios.cca.api.v3.component.Component;
+import dev.onyxstudios.cca.api.v3.entity.PlayerComponent;
 
-public interface IFatigue extends INBTSerializable<CompoundNBT> {
+public interface IFatigue extends Component, PlayerComponent<IFatigue> {
     double getFatigue();
 
     void setFatigue(double fatigue);

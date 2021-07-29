@@ -1,57 +1,27 @@
 package mods.su5ed.somnia.core;
 
-import mods.su5ed.somnia.api.capability.CapabilityFatigue;
-import mods.su5ed.somnia.compat.Compat;
-import mods.su5ed.somnia.config.ConfigHolder;
-import mods.su5ed.somnia.handler.ClientTickHandler;
+import draylar.omegaconfig.OmegaConfig;
+import mods.su5ed.somnia.config.SomniaConfig;
+import mods.su5ed.somnia.handler.EventHandler;
 import mods.su5ed.somnia.network.NetworkHandler;
-import net.minecraft.item.Items;
-import net.minecraft.potion.PotionBrewing;
-import net.minecraft.potion.Potions;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.EventBus;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.fabricmc.api.ModInitializer;
+import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(Somnia.MODID)
-public class Somnia {
+public class Somnia implements ModInitializer {
     public static final String MODID = "somnia";
     public static final Logger LOGGER = LogManager.getLogger();
+    public static final SomniaConfig CONFIG = OmegaConfig.register(SomniaConfig.class);
 
-    public Somnia() {
-        ModLoadingContext context = ModLoadingContext.get();
-        context.registerConfig(ModConfig.Type.COMMON, ConfigHolder.COMMON_SPEC);
-        context.registerConfig(ModConfig.Type.CLIENT, ConfigHolder.CLIENT_SPEC);
-
-        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-        bus.addListener(this::setup);
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> MinecraftForge.EVENT_BUS.register(ClientTickHandler.INSTANCE));
-
-        SomniaObjects.EFFECTS.register(bus);
-        SomniaObjects.POTIONS.register(bus);
+    @Override
+    public void onInitialize() {
+        SomniaObjects.init();
+        EventHandler.init();
+        NetworkHandler.init();
     }
 
-    private void setup(final FMLCommonSetupEvent event) {
-        CapabilityFatigue.register();
-        NetworkHandler.registerMessages();
-
-        Compat.comforts = ModList.get().isLoaded("comforts");
-
-        PotionBrewing.addMix(Potions.NIGHT_VISION, Items.GLISTERING_MELON_SLICE, SomniaObjects.AWAKENING_POTION.get());
-        PotionBrewing.addMix(Potions.LONG_NIGHT_VISION, Items.GLISTERING_MELON_SLICE, SomniaObjects.LONG_AWAKENING_POTION.get());
-        PotionBrewing.addMix(Potions.NIGHT_VISION, Items.BLAZE_POWDER, SomniaObjects.STRONG_AWAKENING_POTION.get());
-
-        PotionBrewing.addMix(SomniaObjects.AWAKENING_POTION.get(), Items.FERMENTED_SPIDER_EYE, SomniaObjects.INSOMNIA_POTION.get());
-        PotionBrewing.addMix(SomniaObjects.LONG_AWAKENING_POTION.get(), Items.FERMENTED_SPIDER_EYE, SomniaObjects.LONG_INSOMNIA_POTION.get());
-        PotionBrewing.addMix(SomniaObjects.STRONG_AWAKENING_POTION.get(), Items.FERMENTED_SPIDER_EYE, SomniaObjects.STRONG_INSOMNIA_POTION.get());
+    public static ResourceLocation locate(String path) {
+        return new ResourceLocation(MODID, path);
     }
 }

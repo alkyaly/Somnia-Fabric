@@ -1,13 +1,12 @@
 package mods.su5ed.somnia.util;
 
-import mods.su5ed.somnia.api.capability.CapabilityFatigue;
+import mods.su5ed.somnia.api.capability.Components;
 import mods.su5ed.somnia.api.capability.IFatigue;
 import mods.su5ed.somnia.core.SomniaCommand;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.List;
-import java.util.Optional;
 
 public enum State {
 	INACTIVE,
@@ -15,21 +14,21 @@ public enum State {
 	WAITING,
 	UNAVAILABLE;
 
-	public static State forWorld(ServerWorld world) {
-		if (!SomniaUtil.isValidSleepTime(world)) return UNAVAILABLE;
-		List<ServerPlayerEntity> players = world.players();
+	public static State forWorld(ServerLevel level) {
+		if (!SomniaUtil.isValidSleepTime(level)) return UNAVAILABLE;
+		List<ServerPlayer> players = level.players();
 
 		if (!players.isEmpty()) {
 			boolean anySleeping = false, allSleeping = true;
 			int somniaSleep = 0, normalSleep = 0;
 
-			for (ServerPlayerEntity player : players) {
+			for (ServerPlayer player : players) {
 				boolean sleeping = player.isSleeping() || SomniaCommand.OVERRIDES.contains(player.getUUID());
 				anySleeping |= sleeping;
 				allSleeping &= sleeping;
 
-				Optional<IFatigue> props = player.getCapability(CapabilityFatigue.FATIGUE_CAPABILITY).resolve();
-				if (props.isPresent() && props.get().shouldSleepNormally()) normalSleep++;
+				IFatigue props = Components.FATIGUE.getNullable(player);
+				if (props != null && props.shouldSleepNormally()) normalSleep++;
 				else somniaSleep++;
 			}
 

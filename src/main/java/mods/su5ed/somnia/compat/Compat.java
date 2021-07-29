@@ -1,48 +1,48 @@
 package mods.su5ed.somnia.compat;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.BedBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Optional;
 
 public class Compat {
-    public static boolean comforts;
+    public static final boolean COMFORTS = FabricLoader.getInstance().isModLoaded("comforts");
 
-    public static boolean isSleepingInHammock(PlayerEntity player) {
-        if (comforts) {
+    public static boolean isSleepingInHammock(Player player) {
+        if (COMFORTS) {
             Optional<BlockPos> pos = player.getSleepingPos();
             if (pos.isPresent()) {
                 Block block = player.level.getBlockState(pos.get()).getBlock();
-                ResourceLocation regName = block.getRegistryName();
+                ResourceLocation regName = Registry.BLOCK.getKey(block);
                 return regName.getNamespace().equals("comforts") && regName.getPath().startsWith("hammock");
             }
         }
         return false;
     }
 
-    public static boolean isSleepingInBag(PlayerEntity player) {
-        Item item = player.inventory.getSelected().getItem();
-        ResourceLocation name = item.getRegistryName();
+    public static boolean isSleepingInBag(Player player) {
+        Item item = player.getInventory().getSelected().getItem();
+        ResourceLocation name = Registry.ITEM.getKey(item);
         String namespace = name.getNamespace();
         String path = name.getPath();
 
-        return namespace.equals("sleeping_bags") && path.endsWith("sleeping_bag") ||
-                namespace.equals("comforts") && path.startsWith("sleeping_bag") ||
-                namespace.equals("cyclic") && path.equals("sleeping_mat");
+        return namespace.equals("comforts") && path.startsWith("sleeping_bag");
+
     }
 
-    public static boolean isBed(BlockState state, BlockPos pos, IBlockReader world, LivingEntity sleeper) {
-        if (comforts) {
-            ResourceLocation regName = state.getBlock().getRegistryName();
+    public static boolean isBed(BlockState state) {
+        if (COMFORTS) {
+            ResourceLocation regName = Registry.BLOCK.getKey(state.getBlock());
             if (regName.getNamespace().equals("comforts") && regName.getPath().startsWith("hammock")) return false;
         }
 
-        return state.isBed(world, pos, sleeper);
+        return state.getBlock() instanceof BedBlock;
     }
 }

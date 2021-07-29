@@ -1,10 +1,8 @@
 package mods.su5ed.somnia.api.capability;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 
-//Thanks @TheSilkMiner for a custom capability example
 public class Fatigue implements IFatigue {
-
     private double fatigue, extraFatigueRate, replenishedFatigue;
     private int fatigueUpdateCounter = 0, sideEffectStage = -1;
     private boolean resetSpawn = true, sleepOverride = false, sleepNormally = false;
@@ -112,24 +110,20 @@ public class Fatigue implements IFatigue {
     }
 
     @Override
-    public CompoundNBT serializeNBT()
-    {
-        CompoundNBT tag = new CompoundNBT();
+    public void readFromNbt(CompoundTag tag) {
+        this.fatigue = tag.getDouble("fatigue");
+        this.extraFatigueRate = tag.getDouble("extraFatigueRate");
+        this.replenishedFatigue = tag.getDouble("replenishedFatigue");
+        this.sideEffectStage = tag.getInt("sideEffectStage");
+        this.resetSpawn = tag.getBoolean("resetSpawn");
+    }
+
+    @Override
+    public void writeToNbt(CompoundTag tag) {
         tag.putDouble("fatigue", this.fatigue);
         tag.putDouble("extraFatigueRate", this.extraFatigueRate);
         tag.putDouble("replenishedFatigue", this.replenishedFatigue);
         tag.putInt("sideEffectStage", this.sideEffectStage);
         tag.putBoolean("resetSpawn", this.resetSpawn);
-        return tag;
-    }
-
-    @Override
-    public void deserializeNBT(CompoundNBT nbt)
-    {
-        this.fatigue = nbt.getDouble("fatigue");
-        this.extraFatigueRate = nbt.getDouble("extraFatigueRate");
-        this.replenishedFatigue = nbt.getDouble("replenishedFatigue");
-        this.sideEffectStage = nbt.getInt("sideEffectStage");
-        this.resetSpawn = nbt.getBoolean("resetSpawn");
     }
 }
