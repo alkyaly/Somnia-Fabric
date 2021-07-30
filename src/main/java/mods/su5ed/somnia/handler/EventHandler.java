@@ -7,13 +7,15 @@ import mods.su5ed.somnia.core.Somnia;
 import mods.su5ed.somnia.core.SomniaCommand;
 import mods.su5ed.somnia.mixin.accessor.ServerPlayerAccessor;
 import mods.su5ed.somnia.network.NetworkHandler;
-import mods.su5ed.somnia.util.ASMHooks;
+import mods.su5ed.somnia.util.MixinHooks;
 import mods.su5ed.somnia.util.SomniaUtil;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.core.BlockPos;
@@ -24,6 +26,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -39,14 +42,15 @@ import java.util.Iterator;
 public final class EventHandler {
 
     public static void init() {
+        CommandRegistrationCallback.EVENT.register(((dispatcher, dedicated) -> SomniaCommand.register(dispatcher)));
         ServerTickEvents.END_SERVER_TICK.register(EventHandler::onEndTick);
+        ServerWorldEvents.LOAD.register(EventHandler::levelLoadHook);
+        ServerWorldEvents.UNLOAD.register(EventHandler::levelUnloadHook);
+        ServerPlayConnectionEvents.JOIN.register(EventHandler::syncFatigue);
         PlayerSleepEvents.TRY_SLEEP.register(EventHandler::onPlayerSleepInBed);
         PlayerSleepEvents.CAN_SLEEP_NOW.register(EventHandler::onSleepingTimeCheck);
         PlayerSleepEvents.WAKE_UP.register(EventHandler::onWakeUp);
         UseBlockCallback.EVENT.register(EventHandler::onRightClickBlock);
-        ServerWorldEvents.LOAD.register(EventHandler::levelLoadHook);
-        ServerWorldEvents.UNLOAD.register(EventHandler::levelUnloadHook);
-        CommandRegistrationCallback.EVENT.register(((dispatcher, dedicated) -> SomniaCommand.register(dispatcher)));
     }
 
     //Forge: TickEvent.ServerTickEvent on ForgeEventHandler
@@ -69,7 +73,7 @@ public final class EventHandler {
             props.setSleepNormally(player.isShiftKeyDown());
         }
 
-        if (Compat.isSleepingInBag(player)) ASMHooks.updateWakeTime(player);
+        if (Compat.isSleepingInBag(player)) MixinHooks.updateWakeTime(player);
 
         return null;
     }
@@ -77,7 +81,6 @@ public final class EventHandler {
     //Forge: SleepTimeCheckEvent on ForgeEventHandler
     public static TriState onSleepingTimeCheck(Player player, BlockPos pos) {
         //if (ModList.get().isLoaded("darkutils") && DarkUtilsPlugin.hasSleepCharm(player)) return; darkutils is not on fabric
-
         IFatigue props = Components.FATIGUE.getNullable(player);
 
         if (props != null) {
@@ -131,7 +134,7 @@ public final class EventHandler {
     //Forge: WorldEvent.Load on ForgeEventHandler
     public static void levelLoadHook(MinecraftServer server, ServerLevel level) {
         ServerTickHandler.HANDLERS.add(new ServerTickHandler(level));
-        Somnia.LOGGER.info("Registering tick handler for loading level!");
+        Somnia.LOGGER.info("Registering tick handler for level: {}", level.dimension().location().toString());
     }
 
     //Forge: WorldEvent.Unload on ForgeEventHandler
@@ -141,10 +144,14 @@ public final class EventHandler {
         while (iter.hasNext()) {
             serverTickHandler = iter.next();
             if (serverTickHandler.levelServer == level) {
-                Somnia.LOGGER.info("Removing tick handler for unloading level!");
+                Somnia.LOGGER.info("Removing tick handler for level: {}", level.dimension().location().toString());
                 iter.remove();
                 break;
             }
         }
+    }
+
+    public static void syncFatigue(ServerGamePacketListenerImpl handler, PacketSender sender, MinecraftServer server) {
+        Components.FATIGUE.sync(handler.player);
     }
 }

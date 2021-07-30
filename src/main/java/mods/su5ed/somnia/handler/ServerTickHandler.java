@@ -1,7 +1,6 @@
 package mods.su5ed.somnia.handler;
 
 import mods.su5ed.somnia.core.Somnia;
-import mods.su5ed.somnia.core.duck.PlayerDuck;
 import mods.su5ed.somnia.mixin.accessor.MinecraftServerAccessor;
 import mods.su5ed.somnia.network.NetworkHandler;
 import mods.su5ed.somnia.util.State;
@@ -92,15 +91,7 @@ public class ServerTickHandler {
 	}
 	
 	private void doMultipliedServerTicking() {
-		//BasicEventHooks.onPreWorldTick(levelServer);
-
-		levelServer.players().stream()
-				.map(player -> (PlayerDuck) player)
-				.forEach(PlayerDuck::posTick);
 		levelServer.tick(() -> ((MinecraftServerAccessor) levelServer.getServer()).somnia$invokeHaveTime());
-
 		levelServer.getServer().getPlayerList().broadcastAll(new ClientboundSetTimePacket(levelServer.getGameTime(), levelServer.getDayTime(), levelServer.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)), levelServer.dimension());
-
-		//BasicEventHooks.onPostWorldTick(levelServer);
 	}
 }

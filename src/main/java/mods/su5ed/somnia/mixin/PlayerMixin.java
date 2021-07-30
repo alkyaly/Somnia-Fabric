@@ -4,7 +4,6 @@ import mods.su5ed.somnia.api.capability.Components;
 import mods.su5ed.somnia.api.capability.IFatigue;
 import mods.su5ed.somnia.core.Somnia;
 import mods.su5ed.somnia.core.SomniaObjects;
-import mods.su5ed.somnia.core.duck.PlayerDuck;
 import mods.su5ed.somnia.handler.PlayerSleepTickHandler;
 import mods.su5ed.somnia.network.NetworkHandler;
 import mods.su5ed.somnia.util.SideEffectStage;
@@ -15,7 +14,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -28,7 +26,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Player.class)
-public abstract class PlayerMixin extends LivingEntity implements PlayerDuck {
+public abstract class PlayerMixin extends LivingEntity {
     @Shadow public abstract boolean isCreative();
 
     @Shadow public abstract boolean isSpectator();
@@ -39,48 +37,6 @@ public abstract class PlayerMixin extends LivingEntity implements PlayerDuck {
 
     @Inject(at = @At("HEAD"), method = "tick") // Forge: TickEvent.PlayerTickEvent on ForgeEventHandler
     private void somnia$preTick(CallbackInfo ci) {
-        preTick();
-    }
-
-    @Inject(at = @At("TAIL"), method = "tick")
-    private void somnia$tailTick(CallbackInfo ci) {
-        posTick();
-    }
-
-    @Inject(
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/world/entity/player/Player;getDamageAfterArmorAbsorb(Lnet/minecraft/world/damagesource/DamageSource;F)F"
-            ),
-        method = "actuallyHurt"
-    ) // Forge: LivingHurtEvent on ForgeEventHandler
-    @SuppressWarnings("ConstantConditions")
-    private void somnia$onPlayerDamage(DamageSource damageSource, float f, CallbackInfo ci) {
-        if ((Object) this instanceof ServerPlayer serverPlayer && isSleeping()) {
-            FriendlyByteBuf buf = PacketByteBufs.create();
-
-            ServerPlayNetworking.send(serverPlayer, NetworkHandler.WAKE_UP_PLAYER, buf);
-        }
-    }
-
-    @Inject(at = @At("HEAD"), method = "die") //Forge: LivingDeathEvent on ForgeEventHandler
-    private void somnia$onDeath(DamageSource damageSource, CallbackInfo ci) {
-        IFatigue props = Components.FATIGUE.getNullable(this);
-
-        if (props != null) {
-            props.setFatigue(0);
-            props.setReplenishedFatigue(0);
-            props.setExtraFatigueRate(0);
-        }
-    }
-
-    @Override
-    public void posTick() {
-        PlayerSleepTickHandler.onPlayerTick(false, (Player) (Object) this);
-    }
-
-    @Override
-    public void preTick() {
         PlayerSleepTickHandler.onPlayerTick(true, (Player) (Object) this);
         if (!level.isClientSide && isAlive() && !isCreative() && !isSpectator() && isSleeping()) {
             IFatigue props = Components.FATIGUE.getNullable(this);
@@ -97,8 +53,7 @@ public abstract class PlayerMixin extends LivingEntity implements PlayerDuck {
                     double replenish = Somnia.CONFIG.fatigue.fatigueReplenishRate * share;
                     extraFatigueRate -= Somnia.CONFIG.fatigue.fatigueReplenishRate / share / replenishedFatigue / 10;
                     replenishedFatigue -= replenish;
-                }
-                else {
+                } else {
                     double rate = Somnia.CONFIG.fatigue.fatigueRate;
 
                     MobEffectInstance wakefulness = getEffect(SomniaObjects.AWAKENING_EFFECT);
@@ -155,6 +110,38 @@ public abstract class PlayerMixin extends LivingEntity implements PlayerDuck {
                     }
                 }
             }
+        }
+    }
+
+    @Inject(at = @At("TAIL"), method = "tick")
+    private void somnia$tailTick(CallbackInfo ci) {
+        PlayerSleepTickHandler.onPlayerTick(false, (Player) (Object) this);
+    }
+
+    @Inject(
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/entity/player/Player;getDamageAfterArmorAbsorb(Lnet/minecraft/world/damagesource/DamageSource;F)F"
+            ),
+        method = "actuallyHurt"
+    ) // Forge: LivingHurtEvent on ForgeEventHandler
+    @SuppressWarnings("ConstantConditions")
+    private void somnia$onPlayerDamage(DamageSource damageSource, float f, CallbackInfo ci) {
+        if ((Object) this instanceof ServerPlayer serverPlayer && isSleeping()) {
+            FriendlyByteBuf buf = PacketByteBufs.create();
+
+            ServerPlayNetworking.send(serverPlayer, NetworkHandler.WAKE_UP_PLAYER, buf);
+        }
+    }
+
+    @Inject(at = @At("HEAD"), method = "die") //Forge: LivingDeathEvent on ForgeEventHandler
+    private void somnia$onDeath(DamageSource damageSource, CallbackInfo ci) {
+        IFatigue props = Components.FATIGUE.getNullable(this);
+
+        if (props != null) {
+            props.setFatigue(0);
+            props.setReplenishedFatigue(0);
+            props.setExtraFatigueRate(0);
         }
     }
 }
