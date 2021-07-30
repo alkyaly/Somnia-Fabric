@@ -31,9 +31,9 @@ public class PlayerSleepTickHandler {
 			props.setSleepOverride(true);
 			
 			if (Somnia.CONFIG.options.fading) {
-				int sleepTimer = player.getSleepTimer()+1;
+				int sleepTimer = player.getSleepTimer() + 1;
 				if (sleepTimer >= 99) sleepTimer = 98;
-				((PlayerAccessor)player).setSleepCounter(sleepTimer);
+				((PlayerAccessor) player).setSleepCounter(sleepTimer);
 			}
 		}
 	}

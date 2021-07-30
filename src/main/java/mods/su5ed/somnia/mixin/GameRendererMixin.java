@@ -1,7 +1,7 @@
 package mods.su5ed.somnia.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import mods.su5ed.somnia.util.ASMHooks;
+import mods.su5ed.somnia.util.MixinHooks;
 import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -13,7 +13,7 @@ public class GameRendererMixin {
 
     @Inject(at = @At("HEAD"), method = "renderLevel", cancellable = true) //Original JS-Coremod: patchGameRenderer.js
     private void somnia$skipRenderLevel(float f, long l, PoseStack poseStack, CallbackInfo ci) {
-        if (ASMHooks.skipRenderWorld(f, l, poseStack)) {
+        if (MixinHooks.skipRenderWorld()) {
             ci.cancel();
         }
     }

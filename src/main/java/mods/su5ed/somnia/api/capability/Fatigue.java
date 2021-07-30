@@ -4,8 +4,11 @@ import net.minecraft.nbt.CompoundTag;
 
 public class Fatigue implements IFatigue {
     private double fatigue, extraFatigueRate, replenishedFatigue;
-    private int fatigueUpdateCounter = 0, sideEffectStage = -1;
-    private boolean resetSpawn = true, sleepOverride = false, sleepNormally = false;
+    private int fatigueUpdateCounter = 0,
+            sideEffectStage = -1;
+    private boolean resetSpawn = true,
+            sleepOverride = false,
+            sleepNormally = false;
     private long wakeTime = -1;
 
     @Override

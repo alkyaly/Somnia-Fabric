@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.List;
 
-@SuppressWarnings("FieldMayBeFinal")
+@SuppressWarnings("CanBeFinal")
 public class SomniaConfig implements Config {
 
     public Fatigue fatigue = new Fatigue();
@@ -53,7 +53,7 @@ public class SomniaConfig implements Config {
         @Comment("""
                 Definitions of fatigue replenishing items.
                 Each list consist of an item registry name, the amount of fatigue it replenishes,
-                and optionally a fatigue rate modifier.
+                and a fatigue rate modifier.
                 """)
         public List<ReplenishingItemEntry> replenishingItems = Arrays.asList(
                 new ReplenishingItemEntry("coffeespawner:coffee", 10),

@@ -2,7 +2,7 @@ package mods.su5ed.somnia.config;
 
 import java.util.Objects;
 
-@SuppressWarnings("FieldMayBeFinal")
+@SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
 public final class ReplenishingItemEntry {
     private String item;
     private double fatigueToReplenish;

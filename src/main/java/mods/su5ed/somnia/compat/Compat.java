@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.Optional;
 
 public class Compat {
-    public static final boolean COMFORTS = FabricLoader.getInstance().isModLoaded("comforts");
+    private static final boolean COMFORTS = FabricLoader.getInstance().isModLoaded("comforts");
 
     public static boolean isSleepingInHammock(Player player) {
         if (COMFORTS) {
@@ -34,7 +34,6 @@ public class Compat {
         String path = name.getPath();
 
         return namespace.equals("comforts") && path.startsWith("sleeping_bag");
-
     }
 
     public static boolean isBed(BlockState state) {
@@ -42,7 +41,6 @@ public class Compat {
             ResourceLocation regName = Registry.BLOCK.getKey(state.getBlock());
             if (regName.getNamespace().equals("comforts") && regName.getPath().startsWith("hammock")) return false;
         }
-
         return state.getBlock() instanceof BedBlock;
     }
 }

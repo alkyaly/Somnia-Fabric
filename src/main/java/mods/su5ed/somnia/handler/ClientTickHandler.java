@@ -36,6 +36,10 @@ public class ClientTickHandler {
     private boolean muted;
     private float volume;
 
+    private ClientTickHandler() {
+        //singleton
+    }
+
     public void onClientTick() {
         if (mc.player != null && mc.level != null) {
             if (mc.player.isSleeping() && Somnia.CONFIG.options.muteSoundWhenSleeping && !muted) {
@@ -102,12 +106,6 @@ public class ClientTickHandler {
             this.sleepStart = -1;
             this.speed = 0;
         }
-
-        if (player != null && player.isSleeping() && Somnia.CONFIG.options.somniaGui && fatigue != -1) renderSleepGui(matrixStack, mc.screen);
-        else if (sleepStart != -1 || speed != 0) {
-            this.sleepStart = -1;
-            this.speed = 0;
-        }
     }
 
     private void renderSleepGui(PoseStack matrixStack, Screen screen) {
@@ -135,7 +133,7 @@ public class ClientTickHandler {
                 int width = screen.width - 40;
 
                 RenderSystem.enableBlend();
-                RenderSystem.setShaderColor(1, 1, 1, 0.2f);
+                RenderSystem.setShaderColor(1, 1, 1, .2f);
                 renderProgressBar(matrixStack, width, 1);
 
                 RenderSystem.disableBlend();
@@ -146,7 +144,11 @@ public class ClientTickHandler {
 
                 int offsetX = display.equalsIgnoreCase("center") ? screen.width / 2 - 80 : display.equalsIgnoreCase("right") ? width - 160 : 0;
                 renderScaledString(matrixStack, offsetX + 20, String.format("%sx%s", SpeedColor.getColorForSpeed(speed).code, MULTIPLIER_FORMAT.format(speed)));
-                double average = speedValues.stream().filter(Objects::nonNull).mapToDouble(Double::doubleValue).summaryStatistics().getAverage();
+                double average = speedValues.stream()
+                        .filter(Objects::nonNull)
+                        .mapToDouble(Double::doubleValue)
+                        .summaryStatistics()
+                        .getAverage();
                 long eta = Math.round((remaining - sleepDuration) / (average * 20));
 
                 renderScaledString(matrixStack, offsetX + 80, getETAString(eta));
@@ -157,7 +159,8 @@ public class ClientTickHandler {
     }
 
     private String getETAString(long totalSeconds) {
-        long etaSeconds = totalSeconds % 60, etaMinutes = (totalSeconds - etaSeconds) / 60;
+        long etaSeconds = totalSeconds % 60,
+                etaMinutes = (totalSeconds - etaSeconds) / 60;
         return String.format(SpeedColor.WHITE.code + "(%s:%s)", (etaMinutes < 10 ? "0" : "") + etaMinutes, (etaSeconds < 10 ? "0" : "") + etaSeconds);
     }
 

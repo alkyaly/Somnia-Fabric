@@ -5,7 +5,7 @@ import com.mojang.datafixers.util.Either;
 import mods.su5ed.somnia.api.capability.Components;
 import mods.su5ed.somnia.api.capability.IFatigue;
 import mods.su5ed.somnia.core.Somnia;
-import mods.su5ed.somnia.util.ASMHooks;
+import mods.su5ed.somnia.util.MixinHooks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
@@ -32,7 +32,7 @@ public abstract class ServerPlayerMixin extends Player {
     //Original JS-Coremod: patchServerPlayerEntity.js
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;updateSleepingPlayerList()V"), method = "startSleepInBed")
     private void somnia$updateAwakeTime(BlockPos blockPos, CallbackInfoReturnable<Either<BedSleepingProblem, Unit>> cir) {
-        ASMHooks.updateWakeTime(this);
+        MixinHooks.updateWakeTime(this);
     }
 
     //Original JS-Coremod: patchServerPlayerEntity.js
@@ -42,10 +42,10 @@ public abstract class ServerPlayerMixin extends Player {
                     target = "Lnet/minecraft/world/level/Level;getEntitiesOfClass(Ljava/lang/Class;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;)Ljava/util/List;"
             ),
             method = "startSleepInBed"
-    ) //ok, this might work, it's definitely one of the worst work-arounds, but I don't want to Redirect the call
+    ) //ok, this might work, it's definitely one of the worst work-around, but I don't want to Redirect the call
     private List<Monster> somnia$ignoreMonsters(List<Monster> original) {
-        if (Somnia.CONFIG.options.ignoreMonsters) {
-            return ASMHooks.DUMMY_NON_EMPTY_LIST;
+        if (Somnia.CONFIG.options.ignoreMonsters && original.isEmpty()) {
+            return MixinHooks.DUMMY_NON_EMPTY_LIST;
         }
         return original;
     }

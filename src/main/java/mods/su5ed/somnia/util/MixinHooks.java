@@ -1,7 +1,6 @@
 package mods.su5ed.somnia.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mods.su5ed.somnia.api.capability.Components;
 import mods.su5ed.somnia.api.capability.IFatigue;
 import mods.su5ed.somnia.core.Somnia;
@@ -21,9 +20,8 @@ import org.lwjgl.opengl.GL11;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("unused")
-public class ASMHooks {
-    public static final List<Monster> DUMMY_NON_EMPTY_LIST = new ArrayList<>() {{add(null);}};
+public class MixinHooks {
+    public static final List<Monster> DUMMY_NON_EMPTY_LIST = new ArrayList<>();
 
     public static boolean doMobSpawning(ServerLevel level) {
         boolean spawnMobs = level.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING);
@@ -52,12 +50,16 @@ public class ASMHooks {
         }
     }
 
-    public static boolean skipRenderWorld(float partialTicks, long finishTimeNano, PoseStack stack) {
+    public static boolean skipRenderWorld() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player.isSleeping() && Somnia.CONFIG.performance.disableRendering) {
             RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT, false);
             return true;
         }
         return false;
+    }
+
+    static {
+        DUMMY_NON_EMPTY_LIST.add(null);
     }
 }

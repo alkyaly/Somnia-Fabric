@@ -1,6 +1,6 @@
 package mods.su5ed.somnia.mixin;
 
-import mods.su5ed.somnia.util.ASMHooks;
+import mods.su5ed.somnia.util.MixinHooks;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import org.spongepowered.asm.mixin.Final;
@@ -21,6 +21,6 @@ public class ServerChunkCacheMixin {
                     ordinal = 0
             ), method = "tickChunks", ordinal = 1) //Original JS-Coremod: patchServerWorld.js
     private boolean somnia$dontSpawnMonsters(boolean original) {
-        return original && !ASMHooks.doMobSpawning(level);
+        return original && !MixinHooks.doMobSpawning(level);
     }
 }

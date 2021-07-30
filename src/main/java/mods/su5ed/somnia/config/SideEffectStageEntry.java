@@ -2,7 +2,7 @@ package mods.su5ed.somnia.config;
 
 import java.util.Objects;
 
-@SuppressWarnings("FieldMayBeFinal")
+@SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
 public final class SideEffectStageEntry {
     private int minFatigue;
     private int maxFatigue;
