@@ -14,7 +14,7 @@ public enum State {
 	WAITING,
 	UNAVAILABLE;
 
-	public static State forWorld(ServerLevel level) {
+	public static State forLevel(ServerLevel level) {
 		if (!SomniaUtil.isValidSleepTime(level)) return UNAVAILABLE;
 		List<ServerPlayer> players = level.players();
 

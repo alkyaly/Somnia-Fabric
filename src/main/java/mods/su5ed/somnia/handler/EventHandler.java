@@ -42,7 +42,7 @@ import java.util.Iterator;
 public final class EventHandler {
 
     public static void init() {
-        CommandRegistrationCallback.EVENT.register(((dispatcher, dedicated) -> SomniaCommand.register(dispatcher)));
+        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> SomniaCommand.register(dispatcher));
         ServerTickEvents.END_SERVER_TICK.register(EventHandler::onEndTick);
         ServerWorldEvents.LOAD.register(EventHandler::levelLoadHook);
         ServerWorldEvents.UNLOAD.register(EventHandler::levelUnloadHook);

@@ -27,12 +27,12 @@ import java.util.stream.Collectors;
 
 public class ClientTickHandler {
     public static final ClientTickHandler INSTANCE = new ClientTickHandler();
-    public static final DecimalFormat MULTIPLIER_FORMAT = new DecimalFormat("0.0");
+    private static final DecimalFormat MULTIPLIER_FORMAT = new DecimalFormat("0.0");
     private static final ItemStack CLOCK = new ItemStack(Items.CLOCK);
     private final Minecraft mc = Minecraft.getInstance();
     private final List<Double> speedValues = new ArrayList<>();
-    public long sleepStart = -1;
-    public double speed;
+    private long sleepStart = -1;
+    private double speed;
     private boolean muted;
     private float volume;
 
@@ -86,7 +86,7 @@ public class ClientTickHandler {
 
         IFatigue props = Components.FATIGUE.getNullable(player);
         double fatigue = props != null ? props.getFatigue() : 0;
-        PoseStack matrixStack = new PoseStack();
+        PoseStack pose = new PoseStack();
         if (player != null && !player.isCreative() && !player.isSpectator() && !mc.options.hideGui) {
             if (!player.isSleeping() && !Somnia.CONFIG.fatigue.fatigueSideEffects && fatigue > Somnia.CONFIG.fatigue.minimumFatigueToSleep) return;
             String str;
@@ -97,18 +97,18 @@ public class ClientTickHandler {
                     scaledWidth = mc.getWindow().getGuiScaledWidth(),
                     scaledHeight = mc.getWindow().getGuiScaledHeight();
             FatigueDisplayPosition pos = player.isSleeping() ? FatigueDisplayPosition.BOTTOM_RIGHT : FatigueDisplayPosition.valueOf(Somnia.CONFIG.fatigue.displayFatigue);
-            mc.font.draw(matrixStack, str, pos.getX(scaledWidth, width), pos.getY(scaledHeight, mc.font.lineHeight), Integer.MIN_VALUE);
+            mc.font.draw(pose, str, pos.getX(scaledWidth, width), pos.getY(scaledHeight, mc.font.lineHeight), Integer.MIN_VALUE);
         }
 
         if (player != null && player.isSleeping() && Somnia.CONFIG.options.somniaGui && fatigue != -1) {
-            renderSleepGui(matrixStack, screen);
+            renderSleepGui(pose, screen);
         } else if (sleepStart != -1 || speed != 0) {
             this.sleepStart = -1;
             this.speed = 0;
         }
     }
 
-    private void renderSleepGui(PoseStack matrixStack, Screen screen) {
+    private void renderSleepGui(PoseStack pose, Screen screen) {
         if (screen == null) return;
 
         if (speed != 0) {
@@ -134,16 +134,16 @@ public class ClientTickHandler {
 
                 RenderSystem.enableBlend();
                 RenderSystem.setShaderColor(1, 1, 1, .2f);
-                renderProgressBar(matrixStack, width, 1);
+                renderProgressBar(pose, width, 1);
 
                 RenderSystem.disableBlend();
                 RenderSystem.setShaderColor(1, 1, 1, 1);
-                renderProgressBar(matrixStack, width, progress);
+                renderProgressBar(pose, width, progress);
 
                 String display = Somnia.CONFIG.fatigue.displayETASleep;
 
                 int offsetX = display.equalsIgnoreCase("center") ? screen.width / 2 - 80 : display.equalsIgnoreCase("right") ? width - 160 : 0;
-                renderScaledString(matrixStack, offsetX + 20, String.format("%sx%s", SpeedColor.getColorForSpeed(speed).code, MULTIPLIER_FORMAT.format(speed)));
+                renderScaledString(pose, offsetX + 20, String.format("%sx%s", SpeedColor.getColorForSpeed(speed).code, MULTIPLIER_FORMAT.format(speed)));
                 double average = speedValues.stream()
                         .filter(Objects::nonNull)
                         .mapToDouble(Double::doubleValue)
@@ -151,9 +151,9 @@ public class ClientTickHandler {
                         .getAverage();
                 long eta = Math.round((remaining - sleepDuration) / (average * 20));
 
-                renderScaledString(matrixStack, offsetX + 80, getETAString(eta));
+                renderScaledString(pose, offsetX + 80, getETAString(eta));
 
-                renderClock(matrixStack, width);
+                renderClock(pose, width);
             }
         }
     }
@@ -164,23 +164,23 @@ public class ClientTickHandler {
         return String.format(SpeedColor.WHITE.code + "(%s:%s)", (etaMinutes < 10 ? "0" : "") + etaMinutes, (etaSeconds < 10 ? "0" : "") + etaSeconds);
     }
 
-    private void renderProgressBar(PoseStack matrixStack, int width, double progress) {
+    private void renderProgressBar(PoseStack pose, int width, double progress) {
         int x = 20;
         for (int amount = (int) (progress * width); amount > 0; amount -= 180, x += 180) {
-            if (mc.screen != null) mc.screen.blit(matrixStack, x, 10, 0, 69, Math.min(amount, 180), 5);
+            if (mc.screen != null) mc.screen.blit(pose, x, 10, 0, 69, Math.min(amount, 180), 5);
         }
     }
 
-    private void renderScaledString(PoseStack matrixStack, int x, String str) {
+    private void renderScaledString(PoseStack pose, int x, String str) {
         if (mc.screen == null) return;
-        matrixStack.pushPose();
-        matrixStack.translate(x, 20, 0);
-        matrixStack.scale(1.5f, 1.5f, 1);
-        mc.font.drawShadow(matrixStack, str, 0, 0, Integer.MIN_VALUE);
-        matrixStack.popPose();
+        pose.pushPose();
+        pose.translate(x, 20, 0);
+        pose.scale(1.5f, 1.5f, 1);
+        mc.font.drawShadow(pose, str, 0, 0, Integer.MIN_VALUE);
+        pose.popPose();
     }
 
-    private void renderClock(PoseStack matrix, int maxWidth) {
+    private void renderClock(PoseStack pose, int maxWidth) {
         int x = switch (Somnia.CONFIG.options.somniaGuiClockPosition.toLowerCase(Locale.ROOT)) {
             case "left" -> 40;
             case "center" -> maxWidth / 2;
@@ -188,11 +188,11 @@ public class ClientTickHandler {
             default -> throw new IllegalArgumentException("Value is not valid: " + Somnia.CONFIG.options.somniaGuiClockPosition);
         };
 
-        matrix.pushPose();
-        matrix.translate(x, 35, 0);
-        matrix.scale(4, 4, 1);
+        pose.pushPose();
+        pose.translate(x, 35, 0);
+        pose.scale(4, 4, 1);
         mc.getItemRenderer().renderAndDecorateItem(mc.player, CLOCK, 0, 0, 21);
-        matrix.popPose();
+        pose.popPose();
     }
 
     public enum SpeedColor {

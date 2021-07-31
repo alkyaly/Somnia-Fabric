@@ -15,8 +15,9 @@ public class ResetSpawnButton extends Button {
 
     public ResetSpawnButton(int xIn, int yIn, int widthIn, int heightIn) {
         super(xIn, yIn, widthIn, heightIn, new TextComponent("Reset spawn: Yes"), button -> {
-            ((ResetSpawnButton) button).resetSpawn = !((ResetSpawnButton) button).resetSpawn;
-            button.setMessage(new TextComponent("Reset spawn: "+(((ResetSpawnButton) button).resetSpawn ? "Yes" : "No")));
+            ResetSpawnButton reset = (ResetSpawnButton) button;
+            reset.resetSpawn = !reset.resetSpawn;
+            button.setMessage(new TextComponent("Reset spawn: " + (reset.resetSpawn ? "Yes" : "No")));
             Minecraft mc = Minecraft.getInstance();
             if (mc.player == null) return;
 

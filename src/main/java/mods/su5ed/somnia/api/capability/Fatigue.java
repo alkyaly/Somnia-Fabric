@@ -1,6 +1,8 @@
 package mods.su5ed.somnia.api.capability;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 
 public class Fatigue implements IFatigue {
     private double fatigue, extraFatigueRate, replenishedFatigue;
@@ -128,5 +130,15 @@ public class Fatigue implements IFatigue {
         tag.putDouble("replenishedFatigue", this.replenishedFatigue);
         tag.putInt("sideEffectStage", this.sideEffectStage);
         tag.putBoolean("resetSpawn", this.resetSpawn);
+    }
+
+    @Override
+    public void applySyncPacket(FriendlyByteBuf buf) {
+        this.fatigue = buf.readDouble();
+    }
+
+    @Override
+    public void writeSyncPacket(FriendlyByteBuf buf, ServerPlayer recipient) {
+        buf.writeDouble(this.fatigue);
     }
 }

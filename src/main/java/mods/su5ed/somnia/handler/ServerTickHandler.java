@@ -37,7 +37,7 @@ public class ServerTickHandler {
 	public void tickEnd() {
 		if (++timer == 10) {
 			timer = 0;
-			State state = State.forWorld(levelServer);
+			State state = State.forLevel(levelServer);
 			
 			if (state != currentState) {
 				if (currentState == SIMULATING) {
