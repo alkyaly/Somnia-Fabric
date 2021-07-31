@@ -7,7 +7,7 @@ import mods.su5ed.somnia.core.Somnia;
 import mods.su5ed.somnia.mixin.accessor.PlayerAccessor;
 import net.minecraft.world.entity.player.Player;
 
-public class PlayerSleepTickHandler {
+public final class PlayerSleepTickHandler {
 	
 	public static void onPlayerTick(boolean start, Player player) {
 		IFatigue props = Components.FATIGUE.getNullable(player);

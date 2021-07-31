@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Optional;
 
-public class Compat {
+public final class Compat {
     private static final boolean COMFORTS = FabricLoader.getInstance().isModLoaded("comforts");
 
     public static boolean isSleepingInHammock(Player player) {

@@ -9,7 +9,7 @@ import net.minecraft.world.item.Item;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SomniaAPI {
+public final class SomniaAPI {
     private static final List<ReplenishingItemEntry> REPLENISHING_ITEMS = new ArrayList<>();
 
     public static void addReplenishingItem(Item item, double fatigueToReplenish) {

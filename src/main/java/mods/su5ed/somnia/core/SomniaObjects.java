@@ -7,7 +7,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.alchemy.Potion;
 
-public class SomniaObjects {
+public final class SomniaObjects {
     public static final MobEffect AWAKENING_EFFECT = new AwakeningEffect();
     public static final MobEffect INSOMNIA_EFFECT = new InsomniaEffect();
     public static final Potion AWAKENING_POTION = new Potion("awakening", new MobEffectInstance(AWAKENING_EFFECT, 2400));

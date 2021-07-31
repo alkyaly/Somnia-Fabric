@@ -7,7 +7,7 @@ import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
 import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
 import mods.su5ed.somnia.core.Somnia;
 
-public class Components implements EntityComponentInitializer {
+public final class Components implements EntityComponentInitializer {
     public static final ComponentKey<Fatigue> FATIGUE = ComponentRegistry.getOrCreate(Somnia.locate("fatigue"), Fatigue.class);
 
     @Override

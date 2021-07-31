@@ -91,6 +91,7 @@ public class ServerTickHandler {
 	}
 	
 	private void doMultipliedServerTicking() {
+		levelServer.players().forEach(EventHandler::tickPlayer);
 		levelServer.tick(() -> ((MinecraftServerAccessor) levelServer.getServer()).somnia$invokeHaveTime());
 		levelServer.getServer().getPlayerList().broadcastAll(new ClientboundSetTimePacket(levelServer.getGameTime(), levelServer.getDayTime(), levelServer.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)), levelServer.dimension());
 	}
