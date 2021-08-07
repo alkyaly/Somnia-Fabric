@@ -21,7 +21,7 @@ public class ResetSpawnButton extends Button {
             Minecraft mc = Minecraft.getInstance();
             if (mc.player == null) return;
 
-            IFatigue props = Components.FATIGUE.getNullable(mc.player);
+            IFatigue props = Components.get(mc.player);
 
             if (props != null) {
                 props.shouldResetSpawn(((ResetSpawnButton) button).resetSpawn);

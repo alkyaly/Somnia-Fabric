@@ -1,0 +1,25 @@
+{
+  "somnia.status.armor": "Essa armadura não parece confortável",
+  "somnia.status.cooldown": "Você ainda não está cansado",
+  "somnia.status.expired": "Você não pode dormir para sempre",
+  "somnia.status.not_now": "Algo mantém-o acordado",
+  "somnia.status.waiting": "Esperando Servidor",
+  "somnia.status.waiting_players": "Esperando Outros Jogadores Dormirem",
+  "somnia.side_effect.0": "Totalmente Acordado",
+  "somnia.side_effect.1": "Cansado",
+  "somnia.side_effect.2": "Exausto",
+  "somnia.side_effect.3": "Privado de Sono",
+  "somnia.side_effect.4": "Desvaindo",
+
+  "effect.somnia.awakening": "Vigília",
+  "item.minecraft.potion.effect.awakening": "Poção de Vigília",
+  "item.minecraft.splash_potion.effect.awakening": "Poção Arremessável de Vigília",
+  "item.minecraft.tipped_arrow.effect.awakening": "Flecha de Vigília",
+  "item.minecraft.lingering_potion.effect.awakening": "Poção Prolongada de Vigília",
+
+  "effect.somnia.insomnia": "Insônia",
+  "item.minecraft.potion.effect.insomnia": "Poção de Insônia",
+  "item.minecraft.splash_potion.effect.insomnia": "Poção Arremessável de Insônia",
+  "item.minecraft.tipped_arrow.effect.insomnia": "Flecha de Insônia",
+  "item.minecraft.lingering_potion.effect.insomnia": "Poção Prolongada de Insônia"
+}

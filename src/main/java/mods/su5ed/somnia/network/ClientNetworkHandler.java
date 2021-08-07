@@ -8,13 +8,13 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 
-public class ClientNetworkHandler {
+public final class ClientNetworkHandler {
 
     public static void init() {
         registerReceiver(NetworkHandler.UPDATE_FATIGUE, ((client, handler, buf, responseSender) -> {
             double fatigue = buf.readDouble();
             client.execute(() -> {
-                IFatigue props = Components.FATIGUE.getNullable(client.player);
+                IFatigue props = Components.get(client.player);
 
                 if (props != null) {
                     props.setFatigue(fatigue);
@@ -24,21 +24,21 @@ public class ClientNetworkHandler {
         registerReceiver(NetworkHandler.UPDATE_WAKE_TIME, ((client, handler, buf, responseSender) -> {
             long wakeTime = buf.readLong();
             client.execute(() -> {
-                IFatigue props = Components.FATIGUE.getNullable(Minecraft.getInstance().player);
+                IFatigue props = Components.get(client.player);
 
                 if (props != null) {
                     props.setWakeTime(wakeTime);
                 }
             });
         }));
-        registerReceiver(NetworkHandler.UPDATE_SPEED, ((client, handler, buf, responseSender) -> {
+        registerReceiver(NetworkHandler.UPDATE_SPEED, (client, handler, buf, responseSender) -> {
             double sp = buf.readDouble();
 
             client.execute(() -> ClientTickHandler.INSTANCE.addSpeedValue(sp));
-        }));
-        registerReceiver(NetworkHandler.OPEN_GUI, ((client, handler, buf, responseSender) -> client.execute(() -> {
+        });
+        registerReceiver(NetworkHandler.OPEN_GUI, (client, handler, buf, responseSender) -> client.execute(() -> {
             if (!(client.screen instanceof WakeTimeSelectScreen)) client.setScreen(new WakeTimeSelectScreen());
-        })));
+        }));
     }
 
     private static void registerReceiver(ResourceLocation resourceLocation, ClientPlayNetworking.PlayChannelHandler handler) {

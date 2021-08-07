@@ -6,7 +6,7 @@ import mods.su5ed.somnia.core.Somnia;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 
-public class SomniaUtil {
+public final class SomniaUtil {
     public static boolean doesPlayerWearArmor(Player player) {
         return player.getInventory().armor.stream()
                 .anyMatch(stack -> !stack.isEmpty());
@@ -19,7 +19,7 @@ public class SomniaUtil {
     }
 
     public static boolean checkFatigue(Player player) {
-        IFatigue props = Components.FATIGUE.getNullable(player);
+        IFatigue props = Components.get(player);
 
         return props != null && (player.isCreative() || props.getFatigue() >= Somnia.CONFIG.fatigue.minimumFatigueToSleep);
     }
@@ -27,7 +27,7 @@ public class SomniaUtil {
     public static String timeStringForWorldTime(long time) {
         time += 6000;
 
-        time = time % 24000;
+        time %= 24000;
         String hours = String.valueOf(time / 1000);
         String minutes = String.valueOf((int) ((time % 1000) / 1000D * 60));
 
@@ -39,7 +39,7 @@ public class SomniaUtil {
 
     public static double getFatigueToReplenish(Player player) {
         long levelTime = player.level.getGameTime();
-        long wakeTime = SomniaUtil.calculateWakeTime(levelTime, player.level.isNight() ? 0 : 12000);
+        long wakeTime = calculateWakeTime(levelTime, player.level.isNight() ? 0 : 12000);
         return Somnia.CONFIG.fatigue.fatigueReplenishRate * (wakeTime - levelTime);
     }
 

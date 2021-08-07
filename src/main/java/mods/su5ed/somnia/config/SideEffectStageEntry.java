@@ -3,7 +3,7 @@ package mods.su5ed.somnia.config;
 import java.util.Objects;
 
 @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
-public final class SideEffectStageEntry {
+public class SideEffectStageEntry {
     private int minFatigue;
     private int maxFatigue;
     private String potionId;
@@ -48,11 +48,6 @@ public final class SideEffectStageEntry {
                 Objects.equals(this.potionId, that.potionId) &&
                 this.duration == that.duration &&
                 this.amplifier == that.amplifier;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(minFatigue, maxFatigue, potionId, duration, amplifier);
     }
 
     @Override

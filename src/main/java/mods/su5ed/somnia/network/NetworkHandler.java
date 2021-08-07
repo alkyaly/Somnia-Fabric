@@ -5,15 +5,12 @@ import mods.su5ed.somnia.api.capability.Components;
 import mods.su5ed.somnia.api.capability.IFatigue;
 import mods.su5ed.somnia.core.Somnia;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
 
-public class NetworkHandler {
+public final class NetworkHandler {
     public static final ResourceLocation UPDATE_FATIGUE = Somnia.locate("update_fatigue");
     public static final ResourceLocation RESET_SPAWN = Somnia.locate("reset_spawn");
     public static final ResourceLocation UPDATE_WAKE_TIME = Somnia.locate("update_wake_time");
@@ -23,48 +20,44 @@ public class NetworkHandler {
     public static final ResourceLocation OPEN_GUI = Somnia.locate("open_gui");
 
     public static void init() {
-        registerReceiver(RESET_SPAWN, ((server, player, handler, buf, responseSender) -> {
+        registerReceiver(RESET_SPAWN, (server, player, handler, buf, responseSender) -> {
             boolean resetSpawn = buf.readBoolean();
+
             server.execute(() -> {
                 if (player != null) {
-                    IFatigue props = Components.FATIGUE.getNullable(player);
+                    IFatigue props = Components.get(player);
                     if (props != null) {
                         props.shouldResetSpawn(resetSpawn);
                     }
                 }
             });
-        }));
-        registerReceiver(UPDATE_WAKE_TIME, ((server, player, handler, buf, responseSender) -> {
+        });
+        registerReceiver(UPDATE_WAKE_TIME, (server, player, handler, buf, responseSender) -> {
             long wakeTime = buf.readLong();
 
             server.execute(() -> {
                 if (player != null) {
-                    IFatigue props = Components.FATIGUE.getNullable(player);
+                    IFatigue props = Components.get(player);
                     if (props != null) {
                         props.setWakeTime(wakeTime);
                     }
                 }
             });
-        }));
-        registerReceiver(ACTIVATE_BLOCK, ((server, player, handler, buf, responseSender) -> {
-            BlockPos pos = buf.readBlockPos();
-            Direction dir = Direction.from3DDataValue(buf.readVarInt());
-            double x = buf.readDouble();
-            double y = buf.readDouble();
-            double z = buf.readDouble();
+        });
+        registerReceiver(ACTIVATE_BLOCK, (server, player, handler, buf, responseSender) -> {
+            BlockHitResult bhr = buf.readBlockHitResult();
 
             server.execute(() -> {
                 if (player != null) {
-                    BlockState state = player.level.getBlockState(pos);
-                    BlockHitResult bhr = new BlockHitResult(new Vec3(x, y, z), dir, pos, false);
+                    BlockState state = player.level.getBlockState(bhr.getBlockPos());
 
                     state.use(player.level, player, MoreObjects.firstNonNull(player.swingingArm, InteractionHand.MAIN_HAND), bhr);
                 }
             });
-        }));
-        registerReceiver(WAKE_UP_PLAYER, ((server, player, handler, buf, responseSender) -> server.execute(() -> {
+        });
+        registerReceiver(WAKE_UP_PLAYER, (server, player, handler, buf, responseSender) -> server.execute(() -> {
             if (player != null) player.stopSleeping();
-        })));
+        }));
     }
 
     private static void registerReceiver(ResourceLocation resourceLocation, ServerPlayNetworking.PlayChannelHandler handler) {

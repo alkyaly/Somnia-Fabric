@@ -12,16 +12,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameRules;
 import org.lwjgl.opengl.GL11;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class MixinHooks {
-    public static final List<Monster> DUMMY_NON_EMPTY_LIST = new ArrayList<>();
+public final class MixinHooks {
 
     public static boolean doMobSpawning(ServerLevel level) {
         boolean spawnMobs = level.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING);
@@ -35,7 +30,7 @@ public class MixinHooks {
     }
 
     public static void updateWakeTime(Player player) {
-        IFatigue props = Components.FATIGUE.getNullable(player);
+        IFatigue props = Components.get(player);
 
         if (props != null) {
             if (props.getWakeTime() < 0) {
@@ -57,9 +52,5 @@ public class MixinHooks {
             return true;
         }
         return false;
-    }
-
-    static {
-        DUMMY_NON_EMPTY_LIST.add(null);
     }
 }

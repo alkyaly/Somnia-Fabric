@@ -3,7 +3,7 @@ package mods.su5ed.somnia.config;
 import java.util.Objects;
 
 @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
-public final class ReplenishingItemEntry {
+public class ReplenishingItemEntry {
     private String item;
     private double fatigueToReplenish;
     private double fatigueRateModifier;
@@ -38,11 +38,6 @@ public final class ReplenishingItemEntry {
         return Objects.equals(this.item, that.item) &&
                 Double.doubleToLongBits(this.fatigueToReplenish) == Double.doubleToLongBits(that.fatigueToReplenish) &&
                 Double.doubleToLongBits(this.fatigueRateModifier) == Double.doubleToLongBits(that.fatigueRateModifier);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(item, fatigueToReplenish, fatigueRateModifier);
     }
 
     @Override

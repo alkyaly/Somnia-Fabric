@@ -1,10 +1,9 @@
 package mods.su5ed.somnia.api.capability;
 
-import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.entity.PlayerComponent;
 
-public interface IFatigue extends Component, PlayerComponent<IFatigue>, AutoSyncedComponent {
+public interface IFatigue extends PlayerComponent<IFatigue>, AutoSyncedComponent {
     double getFatigue();
 
     void setFatigue(double fatigue);

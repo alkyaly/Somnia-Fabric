@@ -72,7 +72,7 @@ public final class EventHandler {
             return Player.BedSleepingProblem.OTHER_PROBLEM;
         }
 
-        IFatigue props = Components.FATIGUE.getNullable(player);
+        IFatigue props = Components.get(player);
         if (props != null) {
             props.setSleepNormally(player.isShiftKeyDown());
         }
@@ -85,7 +85,7 @@ public final class EventHandler {
     //Forge: SleepTimeCheckEvent on ForgeEventHandler
     public static TriState onSleepingTimeCheck(Player player, BlockPos pos) {
         //if (ModList.get().isLoaded("darkutils") && DarkUtilsPlugin.hasSleepCharm(player)) return; darkutils is not on fabric
-        IFatigue props = Components.FATIGUE.getNullable(player);
+        IFatigue props = Components.get(player);
 
         if (props != null) {
             if (props.shouldSleepNormally()) {
@@ -122,7 +122,7 @@ public final class EventHandler {
 
     //Forge: PlayerWakeUpEvent on ForgeEventHandler
     private static void onWakeUp(Player player, boolean reset, boolean update) {
-        IFatigue props = Components.FATIGUE.getNullable(player);
+        IFatigue props = Components.get(player);
 
         if (props != null) {                //DarkUtils is not on fabric
             if (props.shouldSleepNormally() /*|| (ModList.get().isLoaded("darkutils") && DarkUtilsPlugin.hasSleepCharm(player))*/) {
@@ -164,7 +164,7 @@ public final class EventHandler {
             return;
         }
 
-        IFatigue props = Components.FATIGUE.getNullable(player);
+        IFatigue props = Components.get(player);
 
         if (props != null) {
             double fatigue = props.getFatigue();

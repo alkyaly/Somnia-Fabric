@@ -61,7 +61,7 @@ public abstract class PlayerMixin extends LivingEntity {
 
     @Inject(at = @At("HEAD"), method = "die") //Forge: LivingDeathEvent on ForgeEventHandler
     private void somnia$onDeath(DamageSource damageSource, CallbackInfo ci) {
-        IFatigue props = Components.FATIGUE.getNullable(this);
+        IFatigue props = Components.get((Player) (Object) this);
 
         if (props != null) {
             props.setFatigue(0);

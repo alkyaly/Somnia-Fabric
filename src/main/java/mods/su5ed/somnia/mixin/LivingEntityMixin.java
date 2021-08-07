@@ -8,6 +8,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
@@ -34,13 +35,15 @@ public class LivingEntityMixin {
     ) // Forge: LivingEntityUseItemEvent.Finish on ForgeEventHandler
     private void somnia$onFinishUsing(CallbackInfo ci, InteractionHand result, ItemStack stack) {
         Item item = stack.getItem();
-        if (stack.getUseAnimation() == UseAnim.DRINK) {
+        //todo: What if someone wants to add a non-drink item, like a coffee pie? Change the first check.
+        //noinspection ConstantConditions
+        if (stack.getUseAnimation() == UseAnim.DRINK && (Object) this instanceof Player player) {
             Stream.of(Somnia.CONFIG.fatigue.replenishingItems, SomniaAPI.getReplenishingItems())
                     .flatMap(Collection::stream)
                     .filter(entry -> Registry.ITEM.get(new ResourceLocation(entry.item())) == item)
                     .findFirst()
                     .ifPresent(entry -> {
-                        IFatigue props = Components.FATIGUE.getNullable(this);
+                        IFatigue props = Components.get(player);
 
                         if (props != null) {
                             double fatigue = props.getFatigue();

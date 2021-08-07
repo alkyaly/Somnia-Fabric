@@ -13,7 +13,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 
 public class WakeTimeButton extends Button {
     private final String hoverText;
@@ -30,20 +29,15 @@ public class WakeTimeButton extends Button {
 
             ClientPlayNetworking.send(NetworkHandler.UPDATE_WAKE_TIME, buf);
 
-            IFatigue props = Components.FATIGUE.getNullable(mc.player);
+            IFatigue props = Components.get(mc.player);
 
             if (props != null) {
                 props.setWakeTime(targetWakeTime);
             }
             HitResult mouseOver = mc.hitResult;
             if (mouseOver instanceof BlockHitResult bhr) {
-                Vec3 hitVec = mouseOver.getLocation();
                 FriendlyByteBuf byteBuf = PacketByteBufs.create();
-                byteBuf.writeBlockPos(bhr.getBlockPos());
-                byteBuf.writeVarInt(bhr.getDirection().get3DDataValue());
-                byteBuf.writeDouble(hitVec.x);
-                byteBuf.writeDouble(hitVec.y);
-                byteBuf.writeDouble(hitVec.z);
+                byteBuf.writeBlockHitResult(bhr);
 
                 ClientPlayNetworking.send(NetworkHandler.ACTIVATE_BLOCK, byteBuf);
             }

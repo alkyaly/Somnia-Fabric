@@ -6,11 +6,8 @@ import net.minecraft.server.level.ServerPlayer;
 
 public class Fatigue implements IFatigue {
     private double fatigue, extraFatigueRate, replenishedFatigue;
-    private int fatigueUpdateCounter = 0,
-            sideEffectStage = -1;
-    private boolean resetSpawn = true,
-            sleepOverride = false,
-            sleepNormally = false;
+    private int fatigueUpdateCounter, sideEffectStage = -1;
+    private boolean resetSpawn = true, sleepOverride, sleepNormally;
     private long wakeTime = -1;
 
     @Override

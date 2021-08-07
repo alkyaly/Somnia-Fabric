@@ -25,7 +25,7 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-public class ClientTickHandler {
+public final class ClientTickHandler {
     public static final ClientTickHandler INSTANCE = new ClientTickHandler();
     private static final DecimalFormat MULTIPLIER_FORMAT = new DecimalFormat("0.0");
     private static final ItemStack CLOCK = new ItemStack(Items.CLOCK);
@@ -51,7 +51,7 @@ public class ClientTickHandler {
                 mc.options.setSoundCategoryVolume(SoundSource.MASTER, volume);
             }
 
-            IFatigue props = Components.FATIGUE.getNullable(mc.player);
+            IFatigue props = Components.get(mc.player);
 
             if (props != null) {
                 long wakeTime = props.getWakeTime();
@@ -84,7 +84,7 @@ public class ClientTickHandler {
             if (player == null || !player.isSleeping()) return;
         }
 
-        IFatigue props = Components.FATIGUE.getNullable(player);
+        IFatigue props = Components.get(player);
         double fatigue = props != null ? props.getFatigue() : 0;
         PoseStack pose = new PoseStack();
         if (player != null && !player.isCreative() && !player.isSpectator() && !mc.options.hideGui) {
@@ -116,9 +116,7 @@ public class ClientTickHandler {
         } else sleepStart = -1;
 
         RenderSystem.setShaderColor(1, 1, 1, 1);
-        //glDisable(GL_LIGHTING);
-        //glDisable(GL_FOG);
-        IFatigue props = Components.FATIGUE.getNullable(mc.player);
+        IFatigue props = Components.get(mc.player);
 
         if (props != null && mc.level != null) {
             long wakeTime = props.getWakeTime();
@@ -142,7 +140,7 @@ public class ClientTickHandler {
 
                 String display = Somnia.CONFIG.fatigue.displayETASleep;
 
-                int offsetX = display.equalsIgnoreCase("center") ? screen.width / 2 - 80 : display.equalsIgnoreCase("right") ? width - 160 : 0;
+                int offsetX = "center".equalsIgnoreCase(display) ? screen.width / 2 - 80 : "right".equalsIgnoreCase(display) ? width - 160 : 0;
                 renderScaledString(pose, offsetX + 20, String.format("%sx%s", SpeedColor.getColorForSpeed(speed).code, MULTIPLIER_FORMAT.format(speed)));
                 double average = speedValues.stream()
                         .filter(Objects::nonNull)
@@ -158,7 +156,7 @@ public class ClientTickHandler {
         }
     }
 
-    private String getETAString(long totalSeconds) {
+    private static String getETAString(long totalSeconds) {
         long etaSeconds = totalSeconds % 60,
                 etaMinutes = (totalSeconds - etaSeconds) / 60;
         return String.format(SpeedColor.WHITE.code + "(%s:%s)", (etaMinutes < 10 ? "0" : "") + etaMinutes, (etaSeconds < 10 ? "0" : "") + etaSeconds);
@@ -185,7 +183,7 @@ public class ClientTickHandler {
             case "left" -> 40;
             case "center" -> maxWidth / 2;
             case "right" -> maxWidth - 40;
-            default -> throw new IllegalArgumentException("Value is not valid: " + Somnia.CONFIG.options.somniaGuiClockPosition);
+            default -> throw new IllegalArgumentException("Invalid Value: " + Somnia.CONFIG.options.somniaGuiClockPosition);
         };
 
         pose.pushPose();
@@ -204,7 +202,7 @@ public class ClientTickHandler {
         public static final Set<SpeedColor> VALUES = Arrays.stream(values())
                 .sorted(Comparator.comparing(color -> color.range))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
-        public static final char COLOR = (char) 167;
+        public static final char COLOR = 167;
         public final String code;
         public final double range;
 
@@ -218,7 +216,7 @@ public class ClientTickHandler {
                 if (speed < color.range) return color;
             }
 
-            return SpeedColor.WHITE;
+            return WHITE;
         }
     }
 
@@ -230,10 +228,11 @@ public class ClientTickHandler {
         BOTTOM_CENTER((scaledWidth, stringWidth) -> scaledWidth / 2 - stringWidth / 2, (scaledHeight, fontHeight) -> scaledHeight - fontHeight - 45),
         BOTTOM_LEFT((scaledWidth, stringWidth) -> 10, (scaledHeight, fontHeight) -> scaledHeight - fontHeight - 10),
         BOTTOM_RIGHT((scaledWidth, stringWidth) -> scaledWidth - stringWidth - 10, (scaledHeight, fontHeight) -> scaledHeight - fontHeight - 10);
+
         private final BiFunction<Integer, Integer, Integer> x;
         private final BiFunction<Integer, Integer, Integer> y;
 
-        FatigueDisplayPosition(BiFunction<Integer, Integer, Integer> x, BiFunction<Integer, Integer, Integer> y) {
+        FatigueDisplayPosition(BiFunction<Integer, Integer, Integer> y, BiFunction<Integer, Integer, Integer> x) {
             this.x = x;
             this.y = y;
         }
