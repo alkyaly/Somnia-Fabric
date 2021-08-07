@@ -5,7 +5,6 @@ import mods.su5ed.somnia.api.capability.IFatigue;
 import mods.su5ed.somnia.gui.WakeTimeSelectScreen;
 import mods.su5ed.somnia.handler.ClientTickHandler;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 
 public final class ClientNetworkHandler {
