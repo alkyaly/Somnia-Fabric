@@ -35,28 +35,13 @@ public abstract class ServerPlayerMixin extends Player {
         MixinHooks.updateWakeTime(this);
     }
 
-    //Original JS-Coremod: patchServerPlayerEntity.js
-    @ModifyVariable(
-            at = @At(
-                    value = "INVOKE_ASSIGN",
-                    target = "Lnet/minecraft/world/level/Level;getEntitiesOfClass(Ljava/lang/Class;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;)Ljava/util/List;"
-            ),
-            method = "startSleepInBed"
-    ) //ok, this might work, it's definitely one of the worst work-around, but I don't want to Redirect the call
-    private List<Monster> somnia$ignoreMonsters(List<Monster> original) {
-        if (Somnia.CONFIG.options.ignoreMonsters && original.isEmpty()) {
-            return MixinHooks.DUMMY_NON_EMPTY_LIST;
-        }
-        return original;
-    }
-
     @Inject(
             at = @At("HEAD"),
             method = "setRespawnPosition",
             cancellable = true
     ) // Forge: PlayerSetSpawnEvent on ForgeEventHandler
     private void somnia$onPlayerSetSpawn(ResourceKey<Level> resourceKey, BlockPos blockPos, float f, boolean bl, boolean bl2, CallbackInfo ci) {
-        IFatigue props = Components.FATIGUE.getNullable(this);
+        IFatigue props = Components.get(this);
 
         if (props != null) {
             if (!props.resetSpawn()) {
