@@ -8,15 +8,15 @@ import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
 import mods.su5ed.somnia.core.Somnia;
 import net.minecraft.world.entity.player.Player;
 
-public final class Components implements EntityComponentInitializer {
-    public static final ComponentKey<Fatigue> FATIGUE = ComponentRegistry.getOrCreate(Somnia.locate("fatigue"), Fatigue.class);
+public class Components implements EntityComponentInitializer {
+    public static final ComponentKey<FatigueImpl> FATIGUE = ComponentRegistry.getOrCreate(Somnia.locate("fatigue"), FatigueImpl.class);
 
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
-        registry.registerForPlayers(FATIGUE, p -> new Fatigue(), RespawnCopyStrategy.ALWAYS_COPY);
+        registry.registerForPlayers(FATIGUE, p -> new FatigueImpl(), RespawnCopyStrategy.ALWAYS_COPY);
     }
 
-    public static IFatigue get(Player player) {
+    public static Fatigue get(Player player) {
         return FATIGUE.getNullable(player);
     }
 }

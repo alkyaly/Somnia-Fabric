@@ -2,7 +2,7 @@ package mods.su5ed.somnia.network;
 
 import com.google.common.base.MoreObjects;
 import mods.su5ed.somnia.api.capability.Components;
-import mods.su5ed.somnia.api.capability.IFatigue;
+import mods.su5ed.somnia.api.capability.Fatigue;
 import mods.su5ed.somnia.core.Somnia;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.resources.ResourceLocation;
@@ -25,7 +25,7 @@ public final class NetworkHandler {
 
             server.execute(() -> {
                 if (player != null) {
-                    IFatigue props = Components.get(player);
+                    Fatigue props = Components.get(player);
                     if (props != null) {
                         props.shouldResetSpawn(resetSpawn);
                     }
@@ -37,7 +37,7 @@ public final class NetworkHandler {
 
             server.execute(() -> {
                 if (player != null) {
-                    IFatigue props = Components.get(player);
+                    Fatigue props = Components.get(player);
                     if (props != null) {
                         props.setWakeTime(wakeTime);
                     }
@@ -56,7 +56,9 @@ public final class NetworkHandler {
             });
         });
         registerReceiver(WAKE_UP_PLAYER, (server, player, handler, buf, responseSender) -> server.execute(() -> {
-            if (player != null) player.stopSleeping();
+            if (player != null) {
+                player.stopSleeping();
+            }
         }));
     }
 

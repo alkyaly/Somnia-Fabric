@@ -3,7 +3,7 @@ package mods.su5ed.somnia.mixin;
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Either;
 import mods.su5ed.somnia.api.capability.Components;
-import mods.su5ed.somnia.api.capability.IFatigue;
+import mods.su5ed.somnia.api.capability.Fatigue;
 import mods.su5ed.somnia.util.MixinHooks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
@@ -36,7 +36,7 @@ public abstract class ServerPlayerMixin extends Player {
             cancellable = true
     ) // Forge: PlayerSetSpawnEvent on ForgeEventHandler
     private void somnia$onPlayerSetSpawn(ResourceKey<Level> resourceKey, BlockPos blockPos, float f, boolean bl, boolean bl2, CallbackInfo ci) {
-        IFatigue props = Components.get(this);
+        Fatigue props = Components.get(this);
 
         if (props != null) {
             if (!props.resetSpawn()) {

@@ -1,7 +1,7 @@
 package mods.su5ed.somnia.handler;
 
 import mods.su5ed.somnia.api.capability.Components;
-import mods.su5ed.somnia.api.capability.IFatigue;
+import mods.su5ed.somnia.api.capability.Fatigue;
 import mods.su5ed.somnia.compat.Compat;
 import mods.su5ed.somnia.core.Somnia;
 import mods.su5ed.somnia.core.SomniaCommand;
@@ -72,7 +72,7 @@ public final class EventHandler {
             return Player.BedSleepingProblem.OTHER_PROBLEM;
         }
 
-        IFatigue props = Components.get(player);
+        Fatigue props = Components.get(player);
         if (props != null) {
             props.setSleepNormally(player.isShiftKeyDown());
         }
@@ -83,9 +83,9 @@ public final class EventHandler {
     }
 
     //Forge: SleepTimeCheckEvent on ForgeEventHandler
-    public static TriState onSleepingTimeCheck(Player player, BlockPos pos) {
+    private static TriState onSleepingTimeCheck(Player player, BlockPos pos) {
         //if (ModList.get().isLoaded("darkutils") && DarkUtilsPlugin.hasSleepCharm(player)) return; darkutils is not on fabric
-        IFatigue props = Components.get(player);
+        Fatigue props = Components.get(player);
 
         if (props != null) {
             if (props.shouldSleepNormally()) {
@@ -99,7 +99,7 @@ public final class EventHandler {
     }
 
     //Forge: PlayerInteractEvent.RightClickBlock on ForgeEventHandler
-    public static InteractionResult onRightClickBlock(Player player, Level level, InteractionHand hand, BlockHitResult bhr) {
+    private static InteractionResult onRightClickBlock(Player player, Level level, InteractionHand hand, BlockHitResult bhr) {
         if (!level.isClientSide) {
             BlockPos pos = bhr.getBlockPos();
             BlockState state = level.getBlockState(pos);
@@ -122,7 +122,7 @@ public final class EventHandler {
 
     //Forge: PlayerWakeUpEvent on ForgeEventHandler
     private static void onWakeUp(Player player, boolean reset, boolean update) {
-        IFatigue props = Components.get(player);
+        Fatigue props = Components.get(player);
 
         if (props != null) {                //DarkUtils is not on fabric
             if (props.shouldSleepNormally() /*|| (ModList.get().isLoaded("darkutils") && DarkUtilsPlugin.hasSleepCharm(player))*/) {
@@ -136,13 +136,13 @@ public final class EventHandler {
     }
 
     //Forge: WorldEvent.Load on ForgeEventHandler
-    public static void levelLoadHook(MinecraftServer server, ServerLevel level) {
+    private static void levelLoadHook(MinecraftServer server, ServerLevel level) {
         ServerTickHandler.HANDLERS.add(new ServerTickHandler(level));
         Somnia.LOGGER.info("Registering tick handler for level: {}", level.dimension().location().toString());
     }
 
     //Forge: WorldEvent.Unload on ForgeEventHandler
-    public static void levelUnloadHook(MinecraftServer server, ServerLevel level) {
+    private static void levelUnloadHook(MinecraftServer server, ServerLevel level) {
         Iterator<ServerTickHandler> iter = ServerTickHandler.HANDLERS.iterator();
         ServerTickHandler serverTickHandler;
         while (iter.hasNext()) {
@@ -155,7 +155,7 @@ public final class EventHandler {
         }
     }
 
-    public static void syncFatigue(ServerGamePacketListenerImpl handler, PacketSender sender, MinecraftServer server) {
+    private static void syncFatigue(ServerGamePacketListenerImpl handler, PacketSender sender, MinecraftServer server) {
         Components.FATIGUE.sync(handler.player);
     }
 
@@ -164,7 +164,7 @@ public final class EventHandler {
             return;
         }
 
-        IFatigue props = Components.get(player);
+        Fatigue props = Components.get(player);
 
         if (props != null) {
             double fatigue = props.getFatigue();

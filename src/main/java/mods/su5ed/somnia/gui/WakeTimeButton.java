@@ -2,7 +2,7 @@ package mods.su5ed.somnia.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mods.su5ed.somnia.api.capability.Components;
-import mods.su5ed.somnia.api.capability.IFatigue;
+import mods.su5ed.somnia.api.capability.Fatigue;
 import mods.su5ed.somnia.network.NetworkHandler;
 import mods.su5ed.somnia.util.SomniaUtil;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -29,7 +29,7 @@ public class WakeTimeButton extends Button {
 
             ClientPlayNetworking.send(NetworkHandler.UPDATE_WAKE_TIME, buf);
 
-            IFatigue props = Components.get(mc.player);
+            Fatigue props = Components.get(mc.player);
 
             if (props != null) {
                 props.setWakeTime(targetWakeTime);

@@ -1,7 +1,7 @@
 package mods.su5ed.somnia.gui;
 
 import mods.su5ed.somnia.api.capability.Components;
-import mods.su5ed.somnia.api.capability.IFatigue;
+import mods.su5ed.somnia.api.capability.Fatigue;
 import mods.su5ed.somnia.network.NetworkHandler;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -11,7 +11,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.TextComponent;
 
 public class ResetSpawnButton extends Button {
-    public boolean resetSpawn = true;
+    private boolean resetSpawn = true;
 
     public ResetSpawnButton(int xIn, int yIn, int widthIn, int heightIn) {
         super(xIn, yIn, widthIn, heightIn, new TextComponent("Reset spawn: Yes"), button -> {
@@ -21,7 +21,7 @@ public class ResetSpawnButton extends Button {
             Minecraft mc = Minecraft.getInstance();
             if (mc.player == null) return;
 
-            IFatigue props = Components.get(mc.player);
+            Fatigue props = Components.get(mc.player);
 
             if (props != null) {
                 props.shouldResetSpawn(((ResetSpawnButton) button).resetSpawn);

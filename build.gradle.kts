@@ -1,8 +1,8 @@
 plugins {
     java
     `maven-publish`
-    id("fabric-loom") version "0.8-SNAPSHOT"
-    id("io.github.juuxel.loom-quiltflower") version "1.1.3"
+    id("fabric-loom") version "0.9-SNAPSHOT"
+    id("io.github.juuxel.loom-quiltflower") version "1.3.0"
 }
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(16))
@@ -53,6 +53,7 @@ dependencies {
     modImplementation("draylar.omega-config:omega-config-base:$versionOmegaConfig")
     include("draylar.omega-config:omega-config-base:$versionOmegaConfig:min")
 
+    //todo: soon this will not be needed https://github.com/FabricMC/fabric/pull/1633
     modImplementation("top.theillusivec4.somnus:somnus-fabric:$versionSomnus")
     include("top.theillusivec4.somnus:somnus-fabric:$versionSomnus")
 

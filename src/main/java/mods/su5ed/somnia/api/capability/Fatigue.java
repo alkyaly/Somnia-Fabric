@@ -1,141 +1,44 @@
 package mods.su5ed.somnia.api.capability;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
+import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+import dev.onyxstudios.cca.api.v3.entity.PlayerComponent;
 
-public class Fatigue implements IFatigue {
-    private double fatigue, extraFatigueRate, replenishedFatigue;
-    private int fatigueUpdateCounter, sideEffectStage = -1;
-    private boolean resetSpawn = true, sleepOverride, sleepNormally;
-    private long wakeTime = -1;
+public interface Fatigue extends PlayerComponent<Fatigue>, AutoSyncedComponent {
+    double getFatigue();
 
-    @Override
-    public double getFatigue()
-    {
-        return this.fatigue;
-    }
+    void setFatigue(double fatigue);
 
-    @Override
-    public void setFatigue(double fatigue)
-    {
-        this.fatigue = fatigue;
-    }
+    int getSideEffectStage();
 
-    @Override
-    public int getSideEffectStage()
-    {
-        return this.sideEffectStage;
-    }
+    void setSideEffectStage(int stage);
 
-    @Override
-    public void setSideEffectStage(int stage)
-    {
-        this.sideEffectStage = stage;
-    }
+    int updateFatigueCounter();
 
-    @Override
-    public int updateFatigueCounter()
-    {
-        return ++fatigueUpdateCounter;
-    }
+    void resetFatigueCounter();
 
-    @Override
-    public void resetFatigueCounter()
-    {
-        this.fatigueUpdateCounter = 0;
-    }
+    void maxFatigueCounter();
 
-    @Override
-    public void maxFatigueCounter() {
-        this.fatigueUpdateCounter = 100;
-    }
+    void shouldResetSpawn(boolean resetSpawn);
 
-    @Override
-    public void shouldResetSpawn(boolean resetSpawn) {
-        this.resetSpawn = resetSpawn;
-    }
+    boolean resetSpawn();
 
-    @Override
-    public boolean resetSpawn() {
-        return this.resetSpawn;
-    }
+    boolean sleepOverride();
 
-    @Override
-    public boolean sleepOverride() {
-        return this.sleepOverride;
-    }
+    void setSleepOverride(boolean override);
 
-    @Override
-    public void setSleepOverride(boolean override) {
-        this.sleepOverride = override;
-    }
+    void setSleepNormally(boolean sleepNormally);
 
-    @Override
-    public void setSleepNormally(boolean sleepNormally) {
-        this.sleepNormally = sleepNormally;
-    }
+    boolean shouldSleepNormally();
 
-    @Override
-    public boolean shouldSleepNormally() {
-        return this.sleepNormally;
-    }
+    long getWakeTime();
 
-    @Override
-    public long getWakeTime() {
-        return this.wakeTime;
-    }
+    void setWakeTime(long wakeTime);
 
-    @Override
-    public void setWakeTime(long wakeTime) {
-        this.wakeTime = wakeTime;
-    }
+    double getExtraFatigueRate();
 
-    @Override
-    public double getExtraFatigueRate() {
-        return this.extraFatigueRate;
-    }
+    void setExtraFatigueRate(double rate);
 
-    @Override
-    public void setExtraFatigueRate(double rate) {
-        this.extraFatigueRate = rate;
-    }
+    double getReplenishedFatigue();
 
-    @Override
-    public double getReplenishedFatigue() {
-        return this.replenishedFatigue;
-    }
-
-    @Override
-    public void setReplenishedFatigue(double replenishedFatigue) {
-        this.replenishedFatigue = replenishedFatigue;
-    }
-
-    @Override
-    public void readFromNbt(CompoundTag tag) {
-        this.fatigue = tag.getDouble("fatigue");
-        this.extraFatigueRate = tag.getDouble("extraFatigueRate");
-        this.replenishedFatigue = tag.getDouble("replenishedFatigue");
-        this.sideEffectStage = tag.getInt("sideEffectStage");
-        this.resetSpawn = tag.getBoolean("resetSpawn");
-    }
-
-    @Override
-    public void writeToNbt(CompoundTag tag) {
-        tag.putDouble("fatigue", this.fatigue);
-        tag.putDouble("extraFatigueRate", this.extraFatigueRate);
-        tag.putDouble("replenishedFatigue", this.replenishedFatigue);
-        tag.putInt("sideEffectStage", this.sideEffectStage);
-        tag.putBoolean("resetSpawn", this.resetSpawn);
-    }
-
-    @Override
-    public void applySyncPacket(FriendlyByteBuf buf) {
-        this.fatigue = buf.readDouble();
-    }
-
-    @Override
-    public void writeSyncPacket(FriendlyByteBuf buf, ServerPlayer recipient) {
-        buf.writeDouble(this.fatigue);
-    }
+    void setReplenishedFatigue(double replenishedFatigue);
 }

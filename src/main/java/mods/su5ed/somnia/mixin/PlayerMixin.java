@@ -1,13 +1,12 @@
 package mods.su5ed.somnia.mixin;
 
 import mods.su5ed.somnia.api.capability.Components;
-import mods.su5ed.somnia.api.capability.IFatigue;
+import mods.su5ed.somnia.api.capability.Fatigue;
 import mods.su5ed.somnia.handler.EventHandler;
 import mods.su5ed.somnia.handler.PlayerSleepTickHandler;
 import mods.su5ed.somnia.network.NetworkHandler;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
@@ -19,13 +18,32 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Player.class)
 public abstract class PlayerMixin extends LivingEntity {
     @Shadow public abstract boolean isSpectator();
 
+    @Shadow public abstract void stopSleeping();
+
     private PlayerMixin(EntityType<? extends LivingEntity> entityType, Level level) {
         super(entityType, level);
+    }
+
+    //fixme: broken. Also broken in upstream
+    @Inject(
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/entity/player/Player;removeEntitiesOnShoulder()V"
+            ),
+            method = "hurt"
+    ) // Forge: LivingHurtEvent on ForgeEventHandler
+    @SuppressWarnings("ConstantConditions")
+    private void somnia$onLivingHurt(DamageSource damageSource, float f, CallbackInfoReturnable<Boolean> cir) {
+        if ((Object) this instanceof ServerPlayer serverPlayer && isSleeping()) {
+            //stopSleeping();
+            ServerPlayNetworking.send(serverPlayer, NetworkHandler.WAKE_UP_PLAYER, PacketByteBufs.create());
+        }
     }
 
     @Inject(at = @At("HEAD"), method = "tick")
@@ -43,25 +61,9 @@ public abstract class PlayerMixin extends LivingEntity {
         PlayerSleepTickHandler.onPlayerTick(false, (Player) (Object) this);
     }
 
-    @Inject(
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/world/entity/player/Player;getDamageAfterArmorAbsorb(Lnet/minecraft/world/damagesource/DamageSource;F)F"
-            ),
-            method = "actuallyHurt"
-    ) // Forge: LivingHurtEvent on ForgeEventHandler
-    @SuppressWarnings("ConstantConditions")
-    private void somnia$onPlayerDamage(DamageSource damageSource, float f, CallbackInfo ci) {
-        if ((Object) this instanceof ServerPlayer serverPlayer && isSleeping()) {
-            FriendlyByteBuf buf = PacketByteBufs.create();
-
-            ServerPlayNetworking.send(serverPlayer, NetworkHandler.WAKE_UP_PLAYER, buf);
-        }
-    }
-
     @Inject(at = @At("HEAD"), method = "die") //Forge: LivingDeathEvent on ForgeEventHandler
     private void somnia$onDeath(DamageSource damageSource, CallbackInfo ci) {
-        IFatigue props = Components.get((Player) (Object) this);
+        Fatigue props = Components.get((Player) (Object) this);
 
         if (props != null) {
             props.setFatigue(0);

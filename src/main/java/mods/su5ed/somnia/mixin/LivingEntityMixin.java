@@ -2,7 +2,7 @@ package mods.su5ed.somnia.mixin;
 
 import mods.su5ed.somnia.api.SomniaAPI;
 import mods.su5ed.somnia.api.capability.Components;
-import mods.su5ed.somnia.api.capability.IFatigue;
+import mods.su5ed.somnia.api.capability.Fatigue;
 import mods.su5ed.somnia.core.Somnia;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.stream.Stream;
 
 @Mixin(LivingEntity.class)
-public class LivingEntityMixin {
+public abstract class LivingEntityMixin {
 
     //No similar event in fabric api
     @Inject(
@@ -36,15 +36,14 @@ public class LivingEntityMixin {
     private void somnia$onFinishUsing(CallbackInfo ci, InteractionHand result, ItemStack stack) {
         Item item = stack.getItem();
         //todo: What if someone wants to add a non-drink item, like a coffee pie? Change the first check.
-        //noinspection ConstantConditions
+        //noinspection ConstantConditions, InstanceofThis
         if (stack.getUseAnimation() == UseAnim.DRINK && (Object) this instanceof Player player) {
             Stream.of(Somnia.CONFIG.fatigue.replenishingItems, SomniaAPI.getReplenishingItems())
                     .flatMap(Collection::stream)
                     .filter(entry -> Registry.ITEM.get(new ResourceLocation(entry.item())) == item)
                     .findFirst()
                     .ifPresent(entry -> {
-                        IFatigue props = Components.get(player);
-
+                        Fatigue props = Components.get(player);
                         if (props != null) {
                             double fatigue = props.getFatigue();
                             double replenishedFatigue = props.getReplenishedFatigue();

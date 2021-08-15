@@ -1,10 +1,11 @@
 package mods.su5ed.somnia.mixin;
 
 import net.fabricmc.loader.api.FabricLoader;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.LabelNode;
@@ -16,6 +17,8 @@ import java.util.List;
 import java.util.Set;
 
 public class SomniaMixinPlugin implements IMixinConfigPlugin {
+    private static final Logger LOGGER = LogManager.getLogger("Somnia|ASM");
+
     @Override
     public void onLoad(String mixinPackage) {
     }
@@ -39,13 +42,16 @@ public class SomniaMixinPlugin implements IMixinConfigPlugin {
         return null;
     }
 
+    //todo: Soon this will not be needed: https://github.com/FabricMC/fabric/pull/1633
     @Override
     public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
         if ("mods.su5ed.somnia.mixin.ServerPlayerMixin".equals(mixinClassName)) {
-            var resolver = FabricLoader.getInstance().getMappingResolver();
-            String startSleepInBed = resolver.mapMethodName("named", "net.minecraft.server.level.ServerPlayer", "startSleepInBed", "(Lnet/minecraft/core/BlockPos;)Lcom/mojang/datafixers/util/Either;");
+            // I couldn't get MappingResolver to work.
+            String startSleepInBed = FabricLoader.getInstance().isDevelopmentEnvironment() ? "startSleepInBed" : "method_7269";
+            boolean notFound = true;
 
             //POV: You're having fun.
+            methodSearch:
             for (var mtd : targetClass.methods) {
                 if (mtd.name.equals(startSleepInBed)) {
                     for (int i = 0; i < mtd.instructions.size(); i++) {
@@ -53,20 +59,25 @@ public class SomniaMixinPlugin implements IMixinConfigPlugin {
 
                         if (node instanceof MethodInsnNode methodNode && node.getOpcode() == Opcodes.INVOKEINTERFACE
                                 && "java/util/List".equals(methodNode.owner) && "isEmpty".equals(methodNode.name)) {
-                            JumpInsnNode jump = (JumpInsnNode) mtd.instructions.get(i + 1);
-                            InsnList list = new InsnList();
-                            LabelNode label = new LabelNode();
+                            if (mtd.instructions.get(i + 1) instanceof JumpInsnNode jump) {
+                                LOGGER.debug("Modifying check for monsters in ServerPlayer#startSleepInBed...");
+                                InsnList list = new InsnList();
 
-                            list.add(label);
-                            list.add(new FieldInsnNode(Opcodes.GETSTATIC, "mods/su5ed/somnia/core/Somnia", "CONFIG", "Lmods/su5ed/somnia/config/SomniaConfig;"));
-                            list.add(new FieldInsnNode(Opcodes.GETFIELD, "mods/su5ed/somnia/core/SomniaConfig", "options", "Lmods/su5ed/somnia/config/SomniaConfig$Options;"));
-                            list.add(new FieldInsnNode(Opcodes.GETFIELD, "mods/su5ed/somnia/config/SomniaConfig$Options", "ignoreMonsters", "Z"));
-                            list.add(new JumpInsnNode(Opcodes.IFNE, jump.label));
-                            mtd.instructions.insert(jump, list);
+                                list.add(new LabelNode());
+                                list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "mods/su5ed/somnia/util/MixinHooks", "ignoreMonsters", "()Z", false));
+                                list.add(new JumpInsnNode(Opcodes.IFNE, jump.label));
+
+
+                                mtd.instructions.insert(jump, list);
+                            }
+                            notFound = false;
+                            break methodSearch;
                         }
                     }
-                    return;
                 }
+            }
+            if (notFound) {
+                LOGGER.warn("List#isEmpty was not found in {}. Maybe the call was redirected?", startSleepInBed);
             }
         }
     }

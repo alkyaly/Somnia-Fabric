@@ -6,7 +6,7 @@ import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import mods.su5ed.somnia.api.capability.Components;
-import mods.su5ed.somnia.api.capability.IFatigue;
+import mods.su5ed.somnia.api.capability.Fatigue;
 import mods.su5ed.somnia.network.NetworkHandler;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -52,7 +52,7 @@ public final class SomniaCommand {
     }
 
     private static int setFatigue(double amount, ServerPlayer player) {
-        IFatigue props = Components.get(player);
+        Fatigue props = Components.get(player);
 
         if (props != null) {
             props.setFatigue(amount);

@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 @Mixin(ServerLevel.class)
 public class ServerLevelMixin {
 
+    //todo: This is modifying the wrong variable.
     @ModifyVariable(
             at = @At(
                     value = "INVOKE",

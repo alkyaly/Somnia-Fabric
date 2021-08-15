@@ -2,7 +2,7 @@ package mods.su5ed.somnia.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import mods.su5ed.somnia.api.capability.Components;
-import mods.su5ed.somnia.api.capability.IFatigue;
+import mods.su5ed.somnia.api.capability.Fatigue;
 import mods.su5ed.somnia.core.Somnia;
 import mods.su5ed.somnia.handler.ServerTickHandler;
 import mods.su5ed.somnia.network.NetworkHandler;
@@ -30,7 +30,7 @@ public final class MixinHooks {
     }
 
     public static void updateWakeTime(Player player) {
-        IFatigue props = Components.get(player);
+        Fatigue props = Components.get(player);
 
         if (props != null) {
             if (props.getWakeTime() < 0) {
@@ -45,12 +45,15 @@ public final class MixinHooks {
         }
     }
 
-    public static boolean skipRenderWorld() {
-        Minecraft mc = Minecraft.getInstance();
+    public static boolean skipRenderWorld(Minecraft mc) {
         if (mc.player.isSleeping() && Somnia.CONFIG.performance.disableRendering) {
             RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT, false);
             return true;
         }
         return false;
+    }
+
+    public static boolean ignoreMonsters() {
+        return Somnia.CONFIG.options.ignoreMonsters;
     }
 }

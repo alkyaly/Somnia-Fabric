@@ -6,12 +6,12 @@
   "mixins": [
     "LivingEntityMixin",
     "PlayerMixin",
-    "PotionBrewingMixin",
+    "ServerChunkCacheMixin",
     "ServerLevelMixin",
     "ServerPlayerMixin",
-    "ServerChunkCacheMixin",
     "accessor.MinecraftServerAccessor",
     "accessor.PlayerAccessor",
+    "accessor.PotionBrewingAccessor",
     "accessor.ServerPlayerAccessor"
   ],
   "client": [

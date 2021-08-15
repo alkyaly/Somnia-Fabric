@@ -3,6 +3,7 @@ package mods.su5ed.somnia.config;
 import draylar.omegaconfig.api.Comment;
 import draylar.omegaconfig.api.Config;
 import mods.su5ed.somnia.core.Somnia;
+import mods.su5ed.somnia.handler.ClientTickHandler;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -23,7 +24,7 @@ public class SomniaConfig implements Config {
                 The fatigue counter's position.
                 Accepted values: TOP_CENTER, TOP_LEFT, TOP_RIGHT, BOTTOM_CENTER, BOTTOM_LEFT, BOTTOM_RIGHT.
                 """)
-        public String displayFatigue = "BOTTOM_RIGHT";
+        public ClientTickHandler.FatigueDisplayPosition displayFatigue = ClientTickHandler.FatigueDisplayPosition.BOTTOM_RIGHT;
         @Comment("Simplifies the numerical fatigue counter to words")
         public boolean simpleFatigueDisplay = false;
         @Comment("""

@@ -1,7 +1,7 @@
 package mods.su5ed.somnia.util;
 
 import mods.su5ed.somnia.api.capability.Components;
-import mods.su5ed.somnia.api.capability.IFatigue;
+import mods.su5ed.somnia.api.capability.Fatigue;
 import mods.su5ed.somnia.core.Somnia;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
@@ -19,7 +19,7 @@ public final class SomniaUtil {
     }
 
     public static boolean checkFatigue(Player player) {
-        IFatigue props = Components.get(player);
+        Fatigue props = Components.get(player);
 
         return props != null && (player.isCreative() || props.getFatigue() >= Somnia.CONFIG.fatigue.minimumFatigueToSleep);
     }

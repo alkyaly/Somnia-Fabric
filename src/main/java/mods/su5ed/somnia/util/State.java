@@ -1,7 +1,7 @@
 package mods.su5ed.somnia.util;
 
 import mods.su5ed.somnia.api.capability.Components;
-import mods.su5ed.somnia.api.capability.IFatigue;
+import mods.su5ed.somnia.api.capability.Fatigue;
 import mods.su5ed.somnia.core.SomniaCommand;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,7 +27,7 @@ public enum State {
                 anySleeping |= sleeping;
                 allSleeping &= sleeping;
 
-                IFatigue props = Components.get(player);
+                Fatigue props = Components.get(player);
                 if (props != null && props.shouldSleepNormally()) normalSleep++;
                 else somniaSleep++;
             }

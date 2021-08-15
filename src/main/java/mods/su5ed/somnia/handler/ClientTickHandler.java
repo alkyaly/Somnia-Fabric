@@ -3,10 +3,12 @@ package mods.su5ed.somnia.handler;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mods.su5ed.somnia.api.capability.Components;
-import mods.su5ed.somnia.api.capability.IFatigue;
+import mods.su5ed.somnia.api.capability.Fatigue;
 import mods.su5ed.somnia.core.Somnia;
 import mods.su5ed.somnia.network.NetworkHandler;
 import mods.su5ed.somnia.util.SideEffectStage;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.Minecraft;
@@ -25,6 +27,7 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+@Environment(EnvType.CLIENT)
 public final class ClientTickHandler {
     public static final ClientTickHandler INSTANCE = new ClientTickHandler();
     private static final DecimalFormat MULTIPLIER_FORMAT = new DecimalFormat("0.0");
@@ -51,7 +54,7 @@ public final class ClientTickHandler {
                 mc.options.setSoundCategoryVolume(SoundSource.MASTER, volume);
             }
 
-            IFatigue props = Components.get(mc.player);
+            Fatigue props = Components.get(mc.player);
 
             if (props != null) {
                 long wakeTime = props.getWakeTime();
@@ -64,8 +67,7 @@ public final class ClientTickHandler {
                     props.setWakeTime(-1);
                     mc.player.stopSleeping();
 
-                    FriendlyByteBuf wakeBuf = PacketByteBufs.create();
-                    ClientPlayNetworking.send(NetworkHandler.WAKE_UP_PLAYER, wakeBuf);
+                    ClientPlayNetworking.send(NetworkHandler.WAKE_UP_PLAYER, PacketByteBufs.create());
                 }
             }
         }
@@ -84,7 +86,7 @@ public final class ClientTickHandler {
             if (player == null || !player.isSleeping()) return;
         }
 
-        IFatigue props = Components.get(player);
+        Fatigue props = Components.get(player);
         double fatigue = props != null ? props.getFatigue() : 0;
         PoseStack pose = new PoseStack();
         if (player != null && !player.isCreative() && !player.isSpectator() && !mc.options.hideGui) {
@@ -96,7 +98,7 @@ public final class ClientTickHandler {
             int width = mc.font.width(str),
                     scaledWidth = mc.getWindow().getGuiScaledWidth(),
                     scaledHeight = mc.getWindow().getGuiScaledHeight();
-            FatigueDisplayPosition pos = player.isSleeping() ? FatigueDisplayPosition.BOTTOM_RIGHT : FatigueDisplayPosition.valueOf(Somnia.CONFIG.fatigue.displayFatigue);
+            FatigueDisplayPosition pos = player.isSleeping() ? FatigueDisplayPosition.BOTTOM_RIGHT : Somnia.CONFIG.fatigue.displayFatigue;
             mc.font.draw(pose, str, pos.getX(scaledWidth, width), pos.getY(scaledHeight, mc.font.lineHeight), Integer.MIN_VALUE);
         }
 
@@ -116,7 +118,7 @@ public final class ClientTickHandler {
         } else sleepStart = -1;
 
         RenderSystem.setShaderColor(1, 1, 1, 1);
-        IFatigue props = Components.get(mc.player);
+        Fatigue props = Components.get(mc.player);
 
         if (props != null && mc.level != null) {
             long wakeTime = props.getWakeTime();

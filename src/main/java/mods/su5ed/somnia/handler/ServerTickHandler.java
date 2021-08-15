@@ -58,15 +58,16 @@ public class ServerTickHandler {
             this.currentState = state;
         }
 
-        if (currentState == SIMULATING) doMultipliedTicking();
+        if (currentState == SIMULATING) {
+            doMultipliedTicking();
+        }
     }
 
     private void closeGuiWithMessage(@Nullable String key) {
         levelServer.players().stream()
                 .filter(LivingEntity::isSleeping)
                 .forEach(p -> {
-                    FriendlyByteBuf buf = PacketByteBufs.create();
-                    ServerPlayNetworking.send(p, NetworkHandler.WAKE_UP_PLAYER, buf);
+                    ServerPlayNetworking.send(p, NetworkHandler.WAKE_UP_PLAYER, PacketByteBufs.create());
 
                     if (key != null) {
                         p.sendMessage(new TranslatableComponent("somnia.status." + key), UUID.randomUUID());
@@ -81,7 +82,9 @@ public class ServerTickHandler {
 
         long timeMillis = System.currentTimeMillis();
 
-        for (int i = 0; i < flooredTarget; i++) doMultipliedServerTicking();
+        for (int i = 0; i < flooredTarget; i++) {
+            doMultipliedServerTicking();
+        }
 
         multiplier += (System.currentTimeMillis() - timeMillis <= Somnia.CONFIG.logic.delta / tickHandlers) ? 0.1 : -0.1;
 
