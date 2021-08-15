@@ -67,7 +67,6 @@ public class SomniaMixinPlugin implements IMixinConfigPlugin {
                                 list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "mods/su5ed/somnia/util/MixinHooks", "ignoreMonsters", "()Z", false));
                                 list.add(new JumpInsnNode(Opcodes.IFNE, jump.label));
 
-
                                 mtd.instructions.insert(jump, list);
                             }
                             notFound = false;
