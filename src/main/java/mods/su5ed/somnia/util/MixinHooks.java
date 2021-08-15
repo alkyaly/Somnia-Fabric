@@ -13,23 +13,22 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.GameRules;
 import org.lwjgl.opengl.GL11;
 
 public final class MixinHooks {
 
     public static boolean doMobSpawning(ServerLevel level) {
-        boolean spawnMobs = level.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING);
-        if (!Somnia.CONFIG.performance.disableCreatureSpawning || !spawnMobs) return spawnMobs;
-
-        return ServerTickHandler.HANDLERS.stream()
-                .filter(handler -> handler.levelServer == level)
-                .map(handler -> handler.currentState != State.SIMULATING)
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("Couldn't find tick handler for given level"));
+        if (Somnia.CONFIG.performance.disableCreatureSpawning) {
+            return ServerTickHandler.HANDLERS.stream()
+                    .filter(handler -> handler.levelServer == level)
+                    .map(handler -> handler.currentState != State.SIMULATING)
+                    .findAny()
+                    .orElseThrow(() -> new IllegalStateException("Couldn't find tick handler for given level"));
+        }
+        return true;
     }
 
-    public static void updateWakeTime(Player player) {
+    public static void updateWakeTime(ServerPlayer player) {
         Fatigue props = Components.get(player);
 
         if (props != null) {
@@ -40,7 +39,7 @@ public final class MixinHooks {
 
                 FriendlyByteBuf buf = PacketByteBufs.create();
                 buf.writeLong(wakeTime);
-                ServerPlayNetworking.send((ServerPlayer) player, NetworkHandler.UPDATE_WAKE_TIME, buf);
+                ServerPlayNetworking.send(player, NetworkHandler.UPDATE_WAKE_TIME, buf);
             }
         }
     }

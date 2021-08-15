@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 public final class ClientNetworkHandler {
 
     public static void init() {
-        registerReceiver(NetworkHandler.UPDATE_FATIGUE, ((client, handler, buf, responseSender) -> {
+        registerReceiver(NetworkHandler.UPDATE_FATIGUE, (client, handler, buf, responseSender) -> {
             double fatigue = buf.readDouble();
             client.execute(() -> {
                 Fatigue props = Components.get(client.player);
@@ -19,8 +19,8 @@ public final class ClientNetworkHandler {
                     props.setFatigue(fatigue);
                 }
             });
-        }));
-        registerReceiver(NetworkHandler.UPDATE_WAKE_TIME, ((client, handler, buf, responseSender) -> {
+        });
+        registerReceiver(NetworkHandler.UPDATE_WAKE_TIME, (client, handler, buf, responseSender) -> {
             long wakeTime = buf.readLong();
             client.execute(() -> {
                 Fatigue props = Components.get(client.player);
@@ -29,7 +29,7 @@ public final class ClientNetworkHandler {
                     props.setWakeTime(wakeTime);
                 }
             });
-        }));
+        });
         registerReceiver(NetworkHandler.UPDATE_SPEED, (client, handler, buf, responseSender) -> {
             double sp = buf.readDouble();
 

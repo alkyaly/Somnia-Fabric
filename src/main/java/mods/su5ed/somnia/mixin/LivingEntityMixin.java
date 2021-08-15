@@ -35,9 +35,10 @@ public abstract class LivingEntityMixin {
     ) // Forge: LivingEntityUseItemEvent.Finish on ForgeEventHandler
     private void somnia$onFinishUsing(CallbackInfo ci, InteractionHand result, ItemStack stack) {
         Item item = stack.getItem();
-        //todo: What if someone wants to add a non-drink item, like a coffee pie? Change the first check.
+        boolean eat = stack.getUseAnimation() == UseAnim.DRINK || stack.getUseAnimation() == UseAnim.EAT;
+
         //noinspection ConstantConditions, InstanceofThis
-        if (stack.getUseAnimation() == UseAnim.DRINK && (Object) this instanceof Player player) {
+        if (eat && (Object) this instanceof Player player) {
             Stream.of(Somnia.CONFIG.fatigue.replenishingItems, SomniaAPI.getReplenishingItems())
                     .flatMap(Collection::stream)
                     .filter(entry -> Registry.ITEM.get(new ResourceLocation(entry.item())) == item)

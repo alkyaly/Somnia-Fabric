@@ -21,6 +21,6 @@ public class ServerChunkCacheMixin {
                     ordinal = 0
             ), method = "tickChunks", ordinal = 1) //Original JS-Coremod: patchServerWorld.js
     private boolean somnia$dontSpawnMonsters(boolean original) {
-        return original && !MixinHooks.doMobSpawning(level);
+        return original && MixinHooks.doMobSpawning(level);
     }
 }

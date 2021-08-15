@@ -79,6 +79,7 @@ public final class ClientTickHandler {
         if (speedValues.size() > 5) speedValues.remove(0);
     }
 
+    //I'd love to use HudRenderCallback, but getting a component every FRAME might be really bad.
     public void onRenderTick() {
         Player player = mc.player;
         Screen screen = mc.screen;
@@ -89,11 +90,16 @@ public final class ClientTickHandler {
         Fatigue props = Components.get(player);
         double fatigue = props != null ? props.getFatigue() : 0;
         PoseStack pose = new PoseStack();
+
         if (player != null && !player.isCreative() && !player.isSpectator() && !mc.options.hideGui) {
             if (!player.isSleeping() && !Somnia.CONFIG.fatigue.fatigueSideEffects && fatigue > Somnia.CONFIG.fatigue.minimumFatigueToSleep) return;
+
             String str;
-            if (Somnia.CONFIG.fatigue.simpleFatigueDisplay) str = SpeedColor.WHITE.code + SideEffectStage.getSideEffectStageDescription(fatigue);
-            else str = String.format(SpeedColor.WHITE.code + "Fatigue: %.2f", fatigue);
+            if (Somnia.CONFIG.fatigue.simpleFatigueDisplay) {
+                str = SpeedColor.WHITE.code + SideEffectStage.getSideEffectStageDescription(fatigue);
+            } else {
+                str = String.format(SpeedColor.WHITE.code + "Fatigue: %.2f", fatigue);
+            }
 
             int width = mc.font.width(str),
                     scaledWidth = mc.getWindow().getGuiScaledWidth(),
@@ -114,8 +120,12 @@ public final class ClientTickHandler {
         if (screen == null) return;
 
         if (speed != 0) {
-            if (sleepStart == -1) sleepStart = mc.level.getGameTime();
-        } else sleepStart = -1;
+            if (sleepStart == -1) {
+                sleepStart = mc.level.getGameTime();
+            }
+        } else {
+            sleepStart = -1;
+        }
 
         RenderSystem.setShaderColor(1, 1, 1, 1);
         Fatigue props = Components.get(mc.player);
@@ -167,7 +177,9 @@ public final class ClientTickHandler {
     private void renderProgressBar(PoseStack pose, int width, double progress) {
         int x = 20;
         for (int amount = (int) (progress * width); amount > 0; amount -= 180, x += 180) {
-            if (mc.screen != null) mc.screen.blit(pose, x, 10, 0, 69, Math.min(amount, 180), 5);
+            if (mc.screen != null) {
+                mc.screen.blit(pose, x, 10, 0, 69, Math.min(amount, 180), 5);
+            }
         }
     }
 
@@ -199,7 +211,7 @@ public final class ClientTickHandler {
         WHITE(SpeedColor.COLOR+"f", 8),
         DARK_RED(SpeedColor.COLOR+"4", 20),
         RED(SpeedColor.COLOR+"c", 30),
-        GOLD(SpeedColor.COLOR+"6", 100);
+        GOLD(SpeedColor.COLOR+"6", 101);
 
         public static final Set<SpeedColor> VALUES = Arrays.stream(values())
                 .sorted(Comparator.comparing(color -> color.range))

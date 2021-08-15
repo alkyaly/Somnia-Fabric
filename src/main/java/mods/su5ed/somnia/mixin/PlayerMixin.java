@@ -4,11 +4,6 @@ import mods.su5ed.somnia.api.capability.Components;
 import mods.su5ed.somnia.api.capability.Fatigue;
 import mods.su5ed.somnia.handler.EventHandler;
 import mods.su5ed.somnia.handler.PlayerSleepTickHandler;
-import mods.su5ed.somnia.network.NetworkHandler;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -18,7 +13,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Player.class)
 public abstract class PlayerMixin extends LivingEntity {
@@ -31,7 +25,7 @@ public abstract class PlayerMixin extends LivingEntity {
     }
 
     //fixme: broken. Also broken in upstream
-    @Inject(
+    /*@Inject(
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/entity/player/Player;removeEntitiesOnShoulder()V"
@@ -44,7 +38,7 @@ public abstract class PlayerMixin extends LivingEntity {
             //stopSleeping();
             ServerPlayNetworking.send(serverPlayer, NetworkHandler.WAKE_UP_PLAYER, PacketByteBufs.create());
         }
-    }
+    }*/
 
     @Inject(at = @At("HEAD"), method = "tick")
     private void somnia$preSleepingTick(CallbackInfo info) {
@@ -62,7 +56,7 @@ public abstract class PlayerMixin extends LivingEntity {
     }
 
     @Inject(at = @At("HEAD"), method = "die") //Forge: LivingDeathEvent on ForgeEventHandler
-    private void somnia$onDeath(DamageSource damageSource, CallbackInfo ci) {
+    private void somnia$onDeath(CallbackInfo ci) {
         Fatigue props = Components.get((Player) (Object) this);
 
         if (props != null) {

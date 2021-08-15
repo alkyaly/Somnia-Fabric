@@ -6,7 +6,6 @@ import mods.su5ed.somnia.api.capability.Components;
 import mods.su5ed.somnia.api.capability.Fatigue;
 import mods.su5ed.somnia.util.MixinHooks;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Unit;
 import net.minecraft.world.entity.player.Player;
@@ -26,8 +25,8 @@ public abstract class ServerPlayerMixin extends Player {
 
     //Original JS-Coremod: patchServerPlayerEntity.js
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;updateSleepingPlayerList()V"), method = "startSleepInBed")
-    private void somnia$updateAwakeTime(BlockPos blockPos, CallbackInfoReturnable<Either<BedSleepingProblem, Unit>> cir) {
-        MixinHooks.updateWakeTime(this);
+    private void somnia$updateAwakeTime(CallbackInfoReturnable<Either<BedSleepingProblem, Unit>> cir) {
+        MixinHooks.updateWakeTime((ServerPlayer) (Object) this);
     }
 
     @Inject(
@@ -35,7 +34,7 @@ public abstract class ServerPlayerMixin extends Player {
             method = "setRespawnPosition",
             cancellable = true
     ) // Forge: PlayerSetSpawnEvent on ForgeEventHandler
-    private void somnia$onPlayerSetSpawn(ResourceKey<Level> resourceKey, BlockPos blockPos, float f, boolean bl, boolean bl2, CallbackInfo ci) {
+    private void somnia$onPlayerSetSpawn(CallbackInfo ci) {
         Fatigue props = Components.get(this);
 
         if (props != null) {

@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MinecraftMixin {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/toasts/ToastComponent;render(Lcom/mojang/blaze3d/vertex/PoseStack;)V"), method = "runTick")
-    private void somnia$postRenderTick(boolean bl, CallbackInfo ci) {
+    private void somnia$postRenderTick(CallbackInfo ci) {
         ClientTickHandler.INSTANCE.onRenderTick();
     }
 }

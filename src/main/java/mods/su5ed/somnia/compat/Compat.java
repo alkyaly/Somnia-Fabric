@@ -30,16 +30,16 @@ public final class Compat {
     public static boolean isSleepingInBag(Player player) {
         Item item = player.getInventory().getSelected().getItem();
         ResourceLocation name = Registry.ITEM.getKey(item);
-        String namespace = name.getNamespace();
-        String path = name.getPath();
 
-        return namespace.equals("comforts") && path.startsWith("sleeping_bag");
+        return name.getNamespace().equals("comforts") && name.getPath().startsWith("sleeping_bag");
     }
 
     public static boolean isBed(BlockState state) {
         if (COMFORTS) {
             ResourceLocation regName = Registry.BLOCK.getKey(state.getBlock());
-            if (regName.getNamespace().equals("comforts") && regName.getPath().startsWith("hammock")) return false;
+            if (regName.getNamespace().equals("comforts") && regName.getPath().startsWith("hammock")) {
+                return false;
+            }
         }
         return state.getBlock() instanceof BedBlock;
     }

@@ -48,10 +48,8 @@ public class SomniaMixinPlugin implements IMixinConfigPlugin {
         if ("mods.su5ed.somnia.mixin.ServerPlayerMixin".equals(mixinClassName)) {
             // I couldn't get MappingResolver to work.
             String startSleepInBed = FabricLoader.getInstance().isDevelopmentEnvironment() ? "startSleepInBed" : "method_7269";
-            boolean notFound = true;
 
             //POV: You're having fun.
-            methodSearch:
             for (var mtd : targetClass.methods) {
                 if (mtd.name.equals(startSleepInBed)) {
                     for (int i = 0; i < mtd.instructions.size(); i++) {
@@ -69,14 +67,10 @@ public class SomniaMixinPlugin implements IMixinConfigPlugin {
 
                                 mtd.instructions.insert(jump, list);
                             }
-                            notFound = false;
-                            break methodSearch;
+                            return;
                         }
                     }
                 }
-            }
-            if (notFound) {
-                LOGGER.warn("List#isEmpty was not found in {}. Maybe the call was redirected?", startSleepInBed);
             }
         }
     }

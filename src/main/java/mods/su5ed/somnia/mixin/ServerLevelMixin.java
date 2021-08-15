@@ -14,6 +14,6 @@ public class ServerLevelMixin {
                     value = "STORE"
             ), method = "tickChunk", ordinal = 1) //Original JS-Coremod: patchServerWorld.js
     private boolean somnia$dontSpawnMonsters(boolean original) {
-        return original && !MixinHooks.doMobSpawning((ServerLevel) (Object) this);
+        return original && MixinHooks.doMobSpawning((ServerLevel) (Object) this);
     }
 }
