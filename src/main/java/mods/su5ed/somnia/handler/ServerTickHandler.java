@@ -10,6 +10,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.game.ClientboundSetTimePacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.GameRules;
 import org.jetbrains.annotations.Nullable;
@@ -50,9 +51,11 @@ public class ServerTickHandler {
                 buf.writeDouble(state == SIMULATING ? multiplier + overflow : 0);
 
                 //speed is being weird
-                levelServer.players().stream()
-                        .filter(player -> player.level == levelServer)
-                        .forEach(player -> ServerPlayNetworking.send(player, NetworkHandler.UPDATE_SPEED, buf));
+                for (ServerPlayer player : levelServer.players()) {
+                    if (player.level == levelServer) {
+                        ServerPlayNetworking.send(player, NetworkHandler.UPDATE_SPEED, buf);
+                    }
+                }
             }
 
             this.currentState = state;

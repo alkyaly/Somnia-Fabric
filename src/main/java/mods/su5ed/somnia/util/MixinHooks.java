@@ -12,18 +12,18 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 import org.lwjgl.opengl.GL11;
 
 public final class MixinHooks {
 
     public static boolean doMobSpawning(ServerLevel level) {
         if (Somnia.CONFIG.performance.disableCreatureSpawning) {
-            return ServerTickHandler.HANDLERS.stream()
-                    .filter(handler -> handler.levelServer == level)
-                    .map(handler -> handler.currentState != State.SIMULATING)
-                    .findAny()
-                    .orElseThrow(() -> new IllegalStateException("Couldn't find tick handler for given level"));
+            for (ServerTickHandler handler : ServerTickHandler.HANDLERS) {
+                if (handler.levelServer == level) {
+                    return handler.currentState != State.SIMULATING;
+                }
+            }
+            throw new IllegalStateException("Couldn't find tick handler for given level");
         }
         return true;
     }

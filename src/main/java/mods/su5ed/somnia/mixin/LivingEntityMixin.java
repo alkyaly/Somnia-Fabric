@@ -3,6 +3,7 @@ package mods.su5ed.somnia.mixin;
 import mods.su5ed.somnia.api.SomniaAPI;
 import mods.su5ed.somnia.api.capability.Components;
 import mods.su5ed.somnia.api.capability.Fatigue;
+import mods.su5ed.somnia.config.ReplenishingItemEntry;
 import mods.su5ed.somnia.core.Somnia;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -17,9 +18,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-
-import java.util.Collection;
-import java.util.stream.Stream;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin {
@@ -39,27 +37,37 @@ public abstract class LivingEntityMixin {
 
         //noinspection ConstantConditions, InstanceofThis
         if (eat && (Object) this instanceof Player player) {
-            Stream.of(Somnia.CONFIG.fatigue.replenishingItems, SomniaAPI.getReplenishingItems())
-                    .flatMap(Collection::stream)
-                    .filter(entry -> Registry.ITEM.get(new ResourceLocation(entry.item())) == item)
-                    .findFirst()
-                    .ifPresent(entry -> {
-                        Fatigue props = Components.get(player);
-                        if (props != null) {
-                            double fatigue = props.getFatigue();
-                            double replenishedFatigue = props.getReplenishedFatigue();
-                            double coffeeFatigueReplenish = entry.fatigueToReplenish();
-                            double fatigueToReplenish = Math.min(fatigue, coffeeFatigueReplenish);
-                            double newFatigue = replenishedFatigue + fatigueToReplenish;
-                            props.setReplenishedFatigue(newFatigue);
+            for (ReplenishingItemEntry entry : Somnia.CONFIG.fatigue.replenishingItems) {
+                if (Registry.ITEM.get(new ResourceLocation(entry.item())) == item) {
+                    somnia$setAttributesFromEntry(player, entry);
+                    return;
+                }
+            }
 
-                            double baseMultiplier = entry.fatigueRateModifier();
-                            double multiplier = newFatigue * 4 * Somnia.CONFIG.fatigue.fatigueRate;
-                            props.setExtraFatigueRate(props.getExtraFatigueRate() + baseMultiplier * multiplier);
-                            props.setFatigue(fatigue - fatigueToReplenish);
-                            props.maxFatigueCounter();
-                        }
-                    });
+            for (ReplenishingItemEntry entry : SomniaAPI.getReplenishingItems()) {
+                if (Registry.ITEM.get(new ResourceLocation(entry.item())) == item) {
+                    somnia$setAttributesFromEntry(player, entry);
+                    return;
+                }
+            }
+        }
+    }
+
+    private void somnia$setAttributesFromEntry(Player player, ReplenishingItemEntry entry) {
+        Fatigue props = Components.get(player);
+        if (props != null) {
+            double fatigue = props.getFatigue();
+            double replenishedFatigue = props.getReplenishedFatigue();
+            double coffeeFatigueReplenish = entry.fatigueToReplenish();
+            double fatigueToReplenish = Math.min(fatigue, coffeeFatigueReplenish);
+            double newFatigue = replenishedFatigue + fatigueToReplenish;
+            props.setReplenishedFatigue(newFatigue);
+
+            double baseMultiplier = entry.fatigueRateModifier();
+            double multiplier = newFatigue * 4 * Somnia.CONFIG.fatigue.fatigueRate;
+            props.setExtraFatigueRate(props.getExtraFatigueRate() + baseMultiplier * multiplier);
+            props.setFatigue(fatigue - fatigueToReplenish);
+            props.maxFatigueCounter();
         }
     }
 }

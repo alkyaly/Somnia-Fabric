@@ -47,8 +47,6 @@ dependencies {
 
     modImplementation("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:$versionCCA")
     modImplementation("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:$versionCCA")
-    include("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:$versionCCA")
-    include("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:$versionCCA")
 
     modImplementation("draylar.omega-config:omega-config-base:$versionOmegaConfig")
     include("draylar.omega-config:omega-config-base:$versionOmegaConfig:min")
