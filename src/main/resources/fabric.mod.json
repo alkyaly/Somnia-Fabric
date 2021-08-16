@@ -6,8 +6,7 @@
   "description": "Simulating the level while you sleep",
   "icon": "logo.png",
   "authors": [
-    "alkyaLy",
-    "Su5eD"
+    "alkyaLy"
   ],
   "contact": {
     "sources": "https://github.com/alkyaly/Somnia-Awoken",
@@ -18,13 +17,13 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "mods.su5ed.somnia.core.Somnia"
+      "io.github.alkyaly.somnia.core.Somnia"
     ],
     "client": [
-      "mods.su5ed.somnia.core.SomniaClient"
+      "io.github.alkyaly.somnia.core.SomniaClient"
     ],
     "cardinal-components": [
-      "mods.su5ed.somnia.api.capability.Components"
+      "io.github.alkyaly.somnia.api.capability.Components"
     ]
   },
   "mixins": [
@@ -41,7 +40,7 @@
     "fabric": ">=0.36.0",
     "java": ">=16",
     "minecraft": ">=1.17",
-    "cardinal-components-base": ">=3.x.x",
-    "cardinal-components-entity": ">=3.x.x"
+    "cardinal-components-base": "3.x.x",
+    "cardinal-components-entity": "3.x.x"
   }
 }

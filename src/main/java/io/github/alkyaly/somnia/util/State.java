@@ -1,0 +1,49 @@
+package io.github.alkyaly.somnia.util;
+
+import io.github.alkyaly.somnia.api.capability.Components;
+import io.github.alkyaly.somnia.api.capability.Fatigue;
+import io.github.alkyaly.somnia.core.SomniaCommand;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+
+import java.util.List;
+
+public enum State {
+    INACTIVE,
+    SIMULATING,
+    WAITING,
+    UNAVAILABLE;
+
+    public static State forLevel(ServerLevel level) {
+        if (!SomniaUtil.isValidSleepTime(level)) return UNAVAILABLE;
+        List<ServerPlayer> players = level.players();
+
+        if (!players.isEmpty()) {
+            boolean anySleeping = false, allSleeping = true;
+            int somniaSleep = 0, normalSleep = 0;
+
+            for (ServerPlayer player : players) {
+                boolean sleeping = player.isSleeping() || SomniaCommand.OVERRIDES.contains(player.getUUID());
+                anySleeping |= sleeping;
+                allSleeping &= sleeping;
+
+                Fatigue props = Components.get(player);
+                if (props != null && props.shouldSleepNormally()) {
+                    normalSleep++;
+                } else {
+                    somniaSleep++;
+                }
+            }
+
+            if (allSleeping) {
+                if (somniaSleep >= normalSleep) {
+                    return SIMULATING;
+                }
+            } else if (anySleeping) {
+                return WAITING;
+            }
+        }
+
+        return INACTIVE;
+    }
+}

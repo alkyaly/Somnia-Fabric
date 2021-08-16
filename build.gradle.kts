@@ -19,8 +19,8 @@ val versionCCA: String by project
 val versionOmegaConfig: String by project
 val versionSomnus: String by project
 
-version = versionMajor + "." + versionMinor + (if (versionPatch != "0") ".$versionPatch" else "") + (if (versionClassifier.isNotEmpty()) "-$versionClassifier" else "") + "+$versionMc"
-group = "mods.su5ed"
+version = versionMajor + "." + versionMinor + (if (versionPatch != "0") ".$versionPatch" else "") + (if (versionClassifier.isNotEmpty()) "-$versionClassifier" else "") + "+fabric-$versionMc"
+group = "io.github.alkyaly"
 
 repositories {
     mavenLocal() //My version of OmegaConfig because my PRs never got merged
@@ -40,7 +40,7 @@ repositories {
 
 dependencies {
     minecraft("com.mojang:minecraft:$versionMc")
-    mappings(minecraft.officialMojangMappings())
+    mappings(loom.officialMojangMappings())
     modImplementation("net.fabricmc:fabric-loader:$versionFLoader")
 
     modImplementation("net.fabricmc.fabric-api:fabric-api:$versionFAPI")
@@ -55,7 +55,7 @@ dependencies {
     modImplementation("top.theillusivec4.somnus:somnus-fabric:$versionSomnus")
     include("top.theillusivec4.somnus:somnus-fabric:$versionSomnus")
 
-    modImplementation("curse.maven:comforts-433539:3347978")
+    modRuntime("curse.maven:comforts-433539:3347978")
 }
 
 tasks.processResources {

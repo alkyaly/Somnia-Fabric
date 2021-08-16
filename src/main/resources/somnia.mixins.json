@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "mods.su5ed.somnia.mixin",
+  "package": "io.github.alkyaly.somnia.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
     "LivingEntityMixin",
@@ -21,5 +21,5 @@
   "injectors": {
     "defaultRequire": 1
   },
-  "plugin": "mods.su5ed.somnia.mixin.SomniaMixinPlugin"
+  "plugin": "io.github.alkyaly.somnia.mixin.SomniaMixinPlugin"
 }

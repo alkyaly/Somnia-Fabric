@@ -1,4 +1,6 @@
-# Somnia
+# Somnia Fabric
+
+This mod is a port to fabric of [Somnia Awoken](https://github.com/Su5eD/Somnia) by Su5eD.
 A Minecraft mod that simulates the level while you sleep, initially released 2011.
 
 <div align="center">
@@ -28,3 +30,24 @@ All information is available on Somnia's [wiki](https://github.com/Su5eD/Somnia/
 - Fixed selecting wake time 
 - QoL updates
 - Increased configurability
+
+## Install Instructions
+
+### Installing
+    1. Install this mod through GitHub releases, CurseForge or Modrinth.
+    2. Install the [Fabric Modloader](https://fabricmc.net/use/).
+    3. Install the dependencies:
+        * [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api)
+        * [Cardinal Components API](https://www.curseforge.com/minecraft/mc-mods/cardinal-components)
+    4. Add the mod and its dependencies to your modded fabric instance.
+    5. Run the game.
+
+### Building From Source
+    1. Have a JDK.
+    2. Clone this repository.
+    3. Navigate to the cloned source folder.
+    4. Open a terminal.
+    5. Run:
+        * Windows Command Prompt: `gradlew build`
+        * Bash, Powershell, Git Bash: `./gradlew build`
+    6. Get the built JAR inside `./build/libs` 
