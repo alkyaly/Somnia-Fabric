@@ -84,7 +84,7 @@ public class SomniaMixinPlugin implements IMixinConfigPlugin {
                         InsnList list = new InsnList();
 
                         list.add(new LabelNode());
-                        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "io/github/alkyaly/somnia/util/MixinHooks", "ignoreMonsters", "()Z", false));
+                        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "io/github/alkyaly/somnia/util/MixinHooks", "ignoreMonsters", "()Z"));
                         list.add(new JumpInsnNode(Opcodes.IFNE, jump.label));
 
                         mtd.instructions.insert(jump, list);
@@ -95,6 +95,7 @@ public class SomniaMixinPlugin implements IMixinConfigPlugin {
         }
     }
 
+    //todo: Can be removed when loader updates mixin (FabricMC/Mixin#52)
     /*
         Initially, this was a mixin at the HEAD of "renderLevel".
         Then, I realized, it's slow and unperformant to do so.

@@ -7,7 +7,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 
 public final class SomniaUtil {
-    public static boolean doesPlayerWearArmor(Player player) {
+    public static boolean isPlayerWearingArmor(Player player) {
         return player.getInventory().armor.stream()
                 .anyMatch(stack -> !stack.isEmpty());
     }
@@ -37,6 +37,11 @@ public final class SomniaUtil {
         return hours + ":" + minutes;
     }
 
+    /**
+     * Only used when the {@link Player player} chooses to {@link Fatigue#shouldSleepNormally() sleep normally}
+     * @param player The player.
+     * @return The amount of fatigue to replenish after sleeping normally.
+     */
     public static double getFatigueToReplenish(Player player) {
         long levelTime = player.level.getGameTime();
         long wakeTime = calculateWakeTime(levelTime, player.level.isNight() ? 0 : 12000);

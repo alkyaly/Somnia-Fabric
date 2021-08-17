@@ -67,7 +67,7 @@ public final class EventHandler {
         if (!SomniaUtil.checkFatigue(player)) {
             player.displayClientMessage(new TranslatableComponent("somnia.status.cooldown"), true);
             return Player.BedSleepingProblem.OTHER_PROBLEM;
-        } else if (!Somnia.CONFIG.options.sleepWithArmor && !player.isCreative() && SomniaUtil.doesPlayerWearArmor(player)) {
+        } else if (!Somnia.CONFIG.options.sleepWithArmor && !player.isCreative() && SomniaUtil.isPlayerWearingArmor(player)) {
             player.displayClientMessage(new TranslatableComponent("somnia.status.armor"), true);
             return Player.BedSleepingProblem.OTHER_PROBLEM;
         }
@@ -138,7 +138,7 @@ public final class EventHandler {
     //Forge: WorldEvent.Load on ForgeEventHandler
     private static void levelLoadHook(MinecraftServer server, ServerLevel level) {
         ServerTickHandler.HANDLERS.add(new ServerTickHandler(level));
-        Somnia.LOGGER.info("Registering tick handler for level: {}", level.dimension().location().toString());
+        Somnia.LOGGER.info("Registering tick handler for dimension {}", level.dimension().location().toString());
     }
 
     //Forge: WorldEvent.Unload on ForgeEventHandler
@@ -148,7 +148,7 @@ public final class EventHandler {
         while (iter.hasNext()) {
             serverTickHandler = iter.next();
             if (serverTickHandler.levelServer == level) {
-                Somnia.LOGGER.info("Removing tick handler for level: {}", level.dimension().location().toString());
+                Somnia.LOGGER.info("Removing tick handler for dimension {}", level.dimension().location().toString());
                 iter.remove();
                 break;
             }

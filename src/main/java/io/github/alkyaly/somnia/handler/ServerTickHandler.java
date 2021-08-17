@@ -1,8 +1,8 @@
 package io.github.alkyaly.somnia.handler;
 
-import io.github.alkyaly.somnia.network.NetworkHandler;
 import io.github.alkyaly.somnia.core.Somnia;
 import io.github.alkyaly.somnia.mixin.accessor.MinecraftServerAccessor;
+import io.github.alkyaly.somnia.network.NetworkHandler;
 import io.github.alkyaly.somnia.util.State;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -50,7 +50,6 @@ public class ServerTickHandler {
                 FriendlyByteBuf buf = PacketByteBufs.create();
                 buf.writeDouble(state == SIMULATING ? multiplier + overflow : 0);
 
-                //speed is being weird
                 for (ServerPlayer player : levelServer.players()) {
                     if (player.level == levelServer) {
                         ServerPlayNetworking.send(player, NetworkHandler.UPDATE_SPEED, buf);

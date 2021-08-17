@@ -28,6 +28,11 @@ public interface Fatigue extends PlayerComponent<Fatigue>, AutoSyncedComponent {
 
     void setSleepNormally(boolean sleepNormally);
 
+    /**
+     * The {@link net.minecraft.world.entity.player.Player player} will be sleeping normally if they try to sleep
+     * {@link net.minecraft.world.entity.player.Player#isShiftKeyDown() sneaking}.
+     * @return Whether the {@link net.minecraft.world.entity.player.Player player} should sleep normally.
+     */
     boolean shouldSleepNormally();
 
     long getWakeTime();

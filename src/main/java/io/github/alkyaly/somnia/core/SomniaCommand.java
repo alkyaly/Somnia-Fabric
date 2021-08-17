@@ -35,18 +35,18 @@ public final class SomniaCommand {
                 .then(Commands.literal("set")
                     .then(Commands.argument("amount", DoubleArgumentType.doubleArg())
                         .executes(ctx -> setFatigue(DoubleArgumentType.getDouble(ctx, "amount"), ctx.getSource().getPlayerOrException()))
-                        .then(Commands.argument("target", EntityArgument.players())
-                            .executes(ctx -> setFatigue(DoubleArgumentType.getDouble(ctx, "amount"), EntityArgument.getPlayer(ctx, "targets")))))))
+                    .then(Commands.argument("target", EntityArgument.players())
+                        .executes(ctx -> setFatigue(DoubleArgumentType.getDouble(ctx, "amount"), EntityArgument.getPlayer(ctx, "targets")))))))
 
             .then(Commands.literal("override")
                 .then(Commands.literal("add")
                     .then(Commands.argument("target", EntityArgument.players())
                         .executes(ctx -> addOverride(EntityArgument.getPlayer(ctx, "target")))))
-                    .then(Commands.literal("remove")
-                        .then(Commands.argument("target", EntityArgument.players())
-                            .executes(ctx -> removeOverride(EntityArgument.getPlayer(ctx, "target")))))
-                    .then(Commands.literal("list")
-                        .executes(SomniaCommand::listOverrides))));
+                .then(Commands.literal("remove")
+                    .then(Commands.argument("target", EntityArgument.players())
+                        .executes(ctx -> removeOverride(EntityArgument.getPlayer(ctx, "target")))))
+                .then(Commands.literal("list")
+                    .executes(SomniaCommand::listOverrides))));
 
     }
 

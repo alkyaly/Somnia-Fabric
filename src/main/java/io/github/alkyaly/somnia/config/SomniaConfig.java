@@ -1,5 +1,6 @@
 package io.github.alkyaly.somnia.config;
 
+import com.google.common.collect.ImmutableList;
 import draylar.omegaconfig.api.Comment;
 import draylar.omegaconfig.api.Config;
 import io.github.alkyaly.somnia.core.Somnia;
@@ -45,7 +46,7 @@ public class SomniaConfig implements Config {
                 min fatigue, max fatigue, potion ID, duration, amplifier.
                 For a permanent effect, set the duration to -1.
                 """)
-        public List<SideEffectStageEntry> sideEffectStages = Arrays.asList(
+        public List<SideEffectStageEntry> sideEffectStages = ImmutableList.of(
                 new SideEffectStageEntry(70, 80, "minecraft:nausea", 150, 0),
                 new SideEffectStageEntry(80, 90, "minecraft:slowness", 300, 2),
                 new SideEffectStageEntry(90, 95, "minecraft:poison", 200, 1),
@@ -105,6 +106,7 @@ public class SomniaConfig implements Config {
         public String somniaGuiClockPosition = "right";
         @Comment("The item used to select wake time")
         public String wakeTimeSelectItem = "minecraft:clock";
+        public boolean easterEgg = true;
     }
 
     public static class Performance {
@@ -141,7 +143,7 @@ public class SomniaConfig implements Config {
 
     @Override
     public @Nullable String getModid() {
-        return Somnia.MODID;
+        return Somnia.MOD_ID;
     }
 
     @Override

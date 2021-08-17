@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.alkyaly.somnia.api.capability.Components;
 import io.github.alkyaly.somnia.api.capability.Fatigue;
+import io.github.alkyaly.somnia.core.SomniaClient;
 import io.github.alkyaly.somnia.network.NetworkHandler;
 import io.github.alkyaly.somnia.util.SideEffectStage;
 import io.github.alkyaly.somnia.core.Somnia;
@@ -11,12 +12,14 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -31,7 +34,10 @@ import java.util.stream.Collectors;
 public final class ClientTickHandler {
     public static final ClientTickHandler INSTANCE = new ClientTickHandler();
     private static final DecimalFormat MULTIPLIER_FORMAT = new DecimalFormat("0.0");
+
+    private static final ResourceLocation PINEAPPLE = Somnia.locate("textures/pineapple.png");
     private static final ItemStack CLOCK = new ItemStack(Items.CLOCK);
+
     private final Minecraft mc = Minecraft.getInstance();
     private final List<Double> speedValues = new ArrayList<>();
     private long sleepStart = -1;
@@ -201,22 +207,30 @@ public final class ClientTickHandler {
         };
 
         pose.pushPose();
-        pose.translate(x, 35, 0);
-        pose.scale(4, 4, 1);
-        mc.getItemRenderer().renderAndDecorateItem(mc.player, CLOCK, 0, 0, 21);
+        if (SomniaClient.easterEggActive) {
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderColor(1, 1, 1, 1);
+            RenderSystem.setShaderTexture(0, PINEAPPLE);
+            pose.translate(x, 70, 0);
+            pose.scale(.5f, .5f, 1);
+            GuiComponent.blit(pose, 0, 0, 0, 0, 128, 128, 128, 128);
+        } else {
+            pose.translate(x, 35, 0);
+            pose.scale(4, 4, 1);
+            mc.getItemRenderer().renderAndDecorateItem(mc.player, CLOCK, 0, 0, 21);
+        }
         pose.popPose();
     }
 
     public enum SpeedColor {
-        WHITE(SpeedColor.COLOR+"f", 8),
-        DARK_RED(SpeedColor.COLOR+"4", 20),
-        RED(SpeedColor.COLOR+"c", 30),
-        GOLD(SpeedColor.COLOR+"6", 101);
+        WHITE(ChatFormatting.PREFIX_CODE + "f", 8),
+        DARK_RED(ChatFormatting.PREFIX_CODE + "4", 20),
+        RED(ChatFormatting.PREFIX_CODE + "c", 30),
+        GOLD(ChatFormatting.PREFIX_CODE + "6", 101);
 
         public static final Set<SpeedColor> VALUES = Arrays.stream(values())
                 .sorted(Comparator.comparing(color -> color.range))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
-        public static final char COLOR = 167;
         public final String code;
         public final double range;
 

@@ -33,8 +33,7 @@ public class ReplenishingItemEntry {
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
-        if (obj == null || obj.getClass() != this.getClass()) return false;
-        var that = (ReplenishingItemEntry) obj;
+        if (!(obj instanceof ReplenishingItemEntry that)) return false;
         return Objects.equals(this.item, that.item) &&
                 Double.doubleToLongBits(this.fatigueToReplenish) == Double.doubleToLongBits(that.fatigueToReplenish) &&
                 Double.doubleToLongBits(this.fatigueRateModifier) == Double.doubleToLongBits(that.fatigueRateModifier);

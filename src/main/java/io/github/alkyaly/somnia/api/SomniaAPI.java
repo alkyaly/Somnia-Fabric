@@ -1,11 +1,14 @@
 package io.github.alkyaly.somnia.api;
 
+import io.github.alkyaly.somnia.api.capability.Components;
+import io.github.alkyaly.somnia.api.capability.Fatigue;
 import io.github.alkyaly.somnia.config.ReplenishingItemEntry;
 import io.github.alkyaly.somnia.core.Somnia;
 import io.github.alkyaly.somnia.mixin.LivingEntityMixin;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -16,7 +19,6 @@ import java.util.List;
 @SuppressWarnings("unused")
 public final class SomniaAPI {
     private static final List<ReplenishingItemEntry> REPLENISHING_ITEMS = new ArrayList<>();
-    private static List<ReplenishingItemEntry> replenishingItems;
 
     /**
      * @param item               An item that will replenish some amount of fatigue after eaten.
@@ -30,7 +32,7 @@ public final class SomniaAPI {
      * @param item                An item that will replenish some amount of fatigue after eaten.
      * @param fatigueToReplenish  The amount of fatigue to replenish after consumption.
      * @param fatigueRateModifier An additional fatigue increasing rate modifier added after consumption.
-     * See: {@link LivingEntityMixin#somnia$onFinishUsing(CallbackInfo, InteractionHand, ItemStack)}
+     *                            See: {@link LivingEntityMixin#somnia$onFinishUsing(CallbackInfo, InteractionHand, ItemStack)}
      */
     public static void addReplenishingItem(Item item, double fatigueToReplenish, double fatigueRateModifier) {
         addReplenishingItem(Registry.ITEM.getKey(item), fatigueToReplenish, fatigueRateModifier);
@@ -40,33 +42,36 @@ public final class SomniaAPI {
      * @param item                The location of an item that will replenish some amount of fatigue after eaten.
      * @param fatigueToReplenish  The amount of fatigue to replenish after consumption.
      * @param fatigueRateModifier An additional fatigue increasing rate modifier added after consumption.
-     * See: {@link LivingEntityMixin#somnia$onFinishUsing(CallbackInfo, InteractionHand, ItemStack)}
      */
     public static void addReplenishingItem(ResourceLocation item, double fatigueToReplenish, double fatigueRateModifier) {
         ReplenishingItemEntry entry = new ReplenishingItemEntry(item.toString(), fatigueToReplenish, fatigueRateModifier);
-        update(entry);
         REPLENISHING_ITEMS.add(entry);
     }
 
     /**
-     * @return The public facing list of the replenishing items added by in API.
+     * @return The list of the replenishing items added in the API.
      */
     public static List<ReplenishingItemEntry> getReplenishingItems() {
-        create();
-        return replenishingItems;
+        return REPLENISHING_ITEMS;
     }
 
-    //better than creating a list every time someone tries to retrieve the list.
-    private static void update(ReplenishingItemEntry entry) {
-        create();
-        if (entry != null) {
-            replenishingItems.add(entry);
-        }
-    }
+    /**
+     * @param player The player to retrieve and modify the fatigue component from.
+     * @param entry  A {@link ReplenishingItemEntry replenishing item entry} that will modify the {@link Player player} fatigue component.
+     * @see LivingEntityMixin#somnia$onFinishUsing(CallbackInfo, InteractionHand, ItemStack)
+     */
+    public static void modifyAttributesFromEntry(Player player, ReplenishingItemEntry entry) {
+        Fatigue props = Components.get(player);
+        if (props != null) {
+            double fatigue = props.getFatigue();
+            double fatigueToReplenish = Math.min(fatigue, entry.fatigueToReplenish());
+            double newFatigue = props.getReplenishedFatigue() + fatigueToReplenish;
+            props.setReplenishedFatigue(newFatigue);
 
-    private static void create() {
-        if (replenishingItems == null) {
-            replenishingItems = new ArrayList<>(REPLENISHING_ITEMS);
+            double multiplier = newFatigue * 4 * Somnia.CONFIG.fatigue.fatigueRate;
+            props.setExtraFatigueRate(props.getExtraFatigueRate() + entry.fatigueRateModifier() * multiplier);
+            props.setFatigue(fatigue - fatigueToReplenish);
+            props.maxFatigueCounter();
         }
     }
 }

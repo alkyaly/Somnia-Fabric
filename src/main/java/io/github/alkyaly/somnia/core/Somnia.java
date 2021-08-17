@@ -10,7 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Somnia implements ModInitializer {
-    public static final String MODID = "somnia";
+    public static final String MOD_ID = "somnia";
     public static final Logger LOGGER = LogManager.getLogger();
     public static final SomniaConfig CONFIG = OmegaConfig.register(SomniaConfig.class);
 
@@ -23,6 +23,6 @@ public class Somnia implements ModInitializer {
     }
 
     public static ResourceLocation locate(String path) {
-        return new ResourceLocation(MODID, path);
+        return new ResourceLocation(MOD_ID, path);
     }
 }
