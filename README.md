@@ -8,13 +8,7 @@ Instead of skipping the night, the level is sped up while you sleep.<br>
 You can now sleep at any time, as long as you have enough fatigue, which you gain passively over time.<br>
 Be careful - getting too tired gives you negative effects.
 
-![Simulation](https://i.imgur.com/Jxd013f.gif)
-
-## Highlighted changes
-- Works properly on servers
-- Fixed selecting wake time 
-- QoL updates
-- Increased configurability
+[Comment]: <> (Add image/gif etc here.)
 
 ## Install Instructions
 
