@@ -111,7 +111,7 @@ public final class ClientTickHandler {
             int width = mc.font.width(str),
                     scaledWidth = mc.getWindow().getGuiScaledWidth(),
                     scaledHeight = mc.getWindow().getGuiScaledHeight();
-            FatigueDisplayPosition pos = player.isSleeping() ? FatigueDisplayPosition.BOTTOM_RIGHT : Somnia.CONFIG.fatigue.displayFatigue;
+            FatigueDisplayPosition pos = player.isSleeping() ? FatigueDisplayPosition.BOTTOM_RIGHT : FatigueDisplayPosition.valueOf(Somnia.CONFIG.fatigue.displayFatigue);
             mc.font.draw(pose, str, pos.getX(scaledWidth, width), pos.getY(scaledHeight, mc.font.lineHeight), Integer.MIN_VALUE);
         }
 
@@ -234,9 +234,7 @@ public final class ClientTickHandler {
             pose.scale(.5f, .5f, 1);
             GuiComponent.blit(pose, 0, 0, 0, 0, 128, 128, 128, 128);
         } else {
-            pose.translate(x, 35, 0);
-            pose.scale(4, 4, 1);
-            mc.getItemRenderer().renderAndDecorateItem(mc.player, CLOCK, 0, 0, 21);
+            mc.getItemRenderer().renderAndDecorateItem(mc.player, CLOCK, x, 35, 21);
         }
         pose.popPose();
     }

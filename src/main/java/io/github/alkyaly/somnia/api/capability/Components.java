@@ -10,7 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
 public class Components implements EntityComponentInitializer {
-    public static final ComponentKey<FatigueImpl> FATIGUE = ComponentRegistry.getOrCreate(Somnia.locate("fatigue"), FatigueImpl.class);
+    protected static final ComponentKey<FatigueImpl> FATIGUE = ComponentRegistry.getOrCreate(Somnia.locate("fatigue"), FatigueImpl.class);
 
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
@@ -20,5 +20,9 @@ public class Components implements EntityComponentInitializer {
     @Nullable
     public static Fatigue get(Player player) {
         return FATIGUE.getNullable(player);
+    }
+
+    public static void sync(Player player) {
+        FATIGUE.sync(player);
     }
 }

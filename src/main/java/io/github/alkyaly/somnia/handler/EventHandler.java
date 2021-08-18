@@ -84,7 +84,6 @@ public final class EventHandler {
 
     //Forge: SleepTimeCheckEvent on ForgeEventHandler
     private static TriState onSleepingTimeCheck(Player player, BlockPos pos) {
-        //if (ModList.get().isLoaded("darkutils") && DarkUtilsPlugin.hasSleepCharm(player)) return; darkutils is not on fabric
         Fatigue props = Components.get(player);
 
         if (props != null) {
@@ -124,8 +123,8 @@ public final class EventHandler {
     private static void onWakeUp(Player player, boolean reset, boolean update) {
         Fatigue props = Components.get(player);
 
-        if (props != null) {                //DarkUtils is not on fabric
-            if (props.shouldSleepNormally() /*|| (ModList.get().isLoaded("darkutils") && DarkUtilsPlugin.hasSleepCharm(player))*/) {
+        if (props != null) {
+            if (props.shouldSleepNormally()) {
                 props.setFatigue(props.getFatigue() - SomniaUtil.getFatigueToReplenish(player));
             }
             props.maxFatigueCounter();
@@ -156,7 +155,7 @@ public final class EventHandler {
     }
 
     private static void syncFatigue(ServerGamePacketListenerImpl handler, PacketSender sender, MinecraftServer server) {
-        Components.FATIGUE.sync(handler.player);
+        Components.sync(handler.player);
     }
 
     public static void tickPlayer(Player player) {
@@ -176,7 +175,8 @@ public final class EventHandler {
                 fatigue -= Somnia.CONFIG.fatigue.fatigueReplenishRate;
                 double share = Somnia.CONFIG.fatigue.fatigueReplenishRate / Somnia.CONFIG.fatigue.fatigueRate;
                 double replenish = Somnia.CONFIG.fatigue.fatigueReplenishRate * share;
-                extraFatigueRate -= Somnia.CONFIG.fatigue.fatigueReplenishRate / share / replenishedFatigue / 10;
+                extraFatigueRate -= Somnia.CONFIG.fatigue.fatigueReplenishRate
+                        / share / replenishedFatigue == 0 ? 1 : replenishedFatigue / 10;
                 replenishedFatigue -= replenish;
             } else {
                 double rate = Somnia.CONFIG.fatigue.fatigueRate;

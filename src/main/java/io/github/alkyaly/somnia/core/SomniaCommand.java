@@ -72,8 +72,8 @@ public final class SomniaCommand {
         return Command.SINGLE_SUCCESS;
     }
 
-    private static int removeOverride(ServerPlayer target) {
-        OVERRIDES.remove(target.getUUID());
+    private static int removeOverride(ServerPlayer player) {
+        OVERRIDES.remove(player.getUUID());
         return Command.SINGLE_SUCCESS;
     }
 

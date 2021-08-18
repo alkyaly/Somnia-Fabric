@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Optional;
 
+//todo: I think adorn adds non-bed sleep-able blocks? I might have to add compat for it.
 public final class Compat {
     private static final boolean COMFORTS = FabricLoader.getInstance().isModLoaded("comforts");
 

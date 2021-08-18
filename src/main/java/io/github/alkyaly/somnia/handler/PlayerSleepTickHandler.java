@@ -22,8 +22,8 @@ public final class PlayerSleepTickHandler {
     }
 
     private static void tickStart(Fatigue props, Player player) {
-        if (player.isSleeping()) {            //Dark Utils is not on fabric.
-            if (props.shouldSleepNormally() || Compat.isSleepingInHammock(player) /*|| (player.getSleepTimer() > 99 && ModList.get().isLoaded("darkutils") && DarkUtilsPlugin.hasSleepCharm(player)) || Compat.isSleepingInHammock(player)*/) {
+        if (player.isSleeping()) {
+            if (props.shouldSleepNormally() || Compat.isSleepingInHammock(player)) {
                 props.setSleepOverride(false);
                 return;
             }

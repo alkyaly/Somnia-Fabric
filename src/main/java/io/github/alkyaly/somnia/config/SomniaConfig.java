@@ -25,7 +25,7 @@ public class SomniaConfig implements Config {
                 The fatigue counter's position.
                 Accepted values: TOP_CENTER, TOP_LEFT, TOP_RIGHT, BOTTOM_CENTER, BOTTOM_LEFT, BOTTOM_RIGHT.
                 """)
-        public ClientTickHandler.FatigueDisplayPosition displayFatigue = ClientTickHandler.FatigueDisplayPosition.BOTTOM_RIGHT;
+        public String displayFatigue = "BOTTOM_RIGHT";
         @Comment("Simplifies the numerical fatigue counter to words")
         public boolean simpleFatigueDisplay = false;
         @Comment("""
@@ -58,16 +58,7 @@ public class SomniaConfig implements Config {
                 and a fatigue rate modifier.
                 """)
         public List<ReplenishingItemEntry> replenishingItems = Arrays.asList(
-                new ReplenishingItemEntry("coffeespawner:coffee", 10),
-                new ReplenishingItemEntry("coffeespawner:coffee_milk", 10),
-                new ReplenishingItemEntry("coffeespawner:coffee_sugar", 15),
-                new ReplenishingItemEntry("coffeespawner:coffee_milk_sugar", 15),
-                new ReplenishingItemEntry("coffeemod:coffee", 15),
-                new ReplenishingItemEntry("coffeemod:espresso", 15),
-                new ReplenishingItemEntry("coffeemod:latte", 15),
-                new ReplenishingItemEntry("coffeemod:caramel_macchiato", 10),
-                new ReplenishingItemEntry("coffeemod:mocha", 10),
-                new ReplenishingItemEntry("coffeemod:frappe", 10)
+                new ReplenishingItemEntry("mod:item", 10) //I have to find a fabric mod that adds tea or coffee lol...
         );
     }
 
