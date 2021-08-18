@@ -21,6 +21,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -167,7 +168,11 @@ public final class ClientTickHandler {
                         .getAverage();
                 long eta = Math.round((remaining - sleepDuration) / (average * 20));
 
-                renderScaledString(pose, offsetX + 80, getETAString(eta));
+                if (SomniaClient.easterEggActive) {
+                    renderScaledRainbowString(pose, offsetX + 80, getETAString(eta));
+                }  else {
+                    renderScaledString(pose, offsetX + 80, SpeedColor.WHITE.code + getETAString(eta));
+                }
 
                 renderClock(pose, width);
             }
@@ -177,7 +182,7 @@ public final class ClientTickHandler {
     private static String getETAString(long totalSeconds) {
         long etaSeconds = totalSeconds % 60,
                 etaMinutes = (totalSeconds - etaSeconds) / 60;
-        return String.format(SpeedColor.WHITE.code + "(%s:%s)", (etaMinutes < 10 ? "0" : "") + etaMinutes, (etaSeconds < 10 ? "0" : "") + etaSeconds);
+        return String.format("(%s:%s)", (etaMinutes < 10 ? "0" : "") + etaMinutes, (etaSeconds < 10 ? "0" : "") + etaSeconds);
     }
 
     private void renderProgressBar(PoseStack pose, int width, double progress) {
@@ -187,6 +192,20 @@ public final class ClientTickHandler {
                 mc.screen.blit(pose, x, 10, 0, 69, Math.min(amount, 180), 5);
             }
         }
+    }
+
+    private void renderScaledRainbowString(PoseStack pose, int x, String str) {
+        if (mc.screen == null) return;
+        pose.pushPose();
+        pose.translate(x, 20, 0);
+        pose.scale(1.5f, 1.5f, 1);
+        for (char xar : str.toCharArray()) {
+            int rgb = Mth.hsvToRgb((System.currentTimeMillis() % 3000) / 3000f, 0.7f, 0.9f);
+            String to = String.valueOf(xar);
+            mc.font.draw(pose, to, x, 0, rgb);
+            x += mc.font.width(to);
+        }
+        pose.popPose();
     }
 
     private void renderScaledString(PoseStack pose, int x, String str) {

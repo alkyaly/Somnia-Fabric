@@ -1,7 +1,7 @@
 plugins {
     java
     `maven-publish`
-    id("fabric-loom") version "0.9-SNAPSHOT"
+    id("fabric-loom") version "0.8-SNAPSHOT"
     id("io.github.juuxel.loom-quiltflower") version "1.3.0"
 }
 
@@ -40,7 +40,7 @@ repositories {
 
 dependencies {
     minecraft("com.mojang:minecraft:$versionMc")
-    mappings(loom.officialMojangMappings())
+    mappings(minecraft.officialMojangMappings())
     modImplementation("net.fabricmc:fabric-loader:$versionFLoader")
 
     modImplementation("net.fabricmc.fabric-api:fabric-api:$versionFAPI")

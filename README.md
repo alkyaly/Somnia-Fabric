@@ -2,13 +2,16 @@
 
 This mod is a port to fabric of [Somnia Awoken](https://github.com/Su5eD/Somnia) by Su5eD:<br>
 A Minecraft mod that simulates the level while you sleep, initially released in 2011.
+<br>
+<br>
+*Warning: If you're a Yarn contributor, do not look the code. It's in Mojang Official Mappings*
 
 ## How it works
 Instead of skipping the night, the level is sped up while you sleep.<br>
 You can now sleep at any time, as long as you have enough fatigue, which you gain passively over time.<br>
 Be careful - getting too tired gives you negative effects.
 
-[Comment]: <> (Add image/gif etc here.)
+[Comment]: # (Add image/gif etc here.)
 
 ## Install Instructions
 
