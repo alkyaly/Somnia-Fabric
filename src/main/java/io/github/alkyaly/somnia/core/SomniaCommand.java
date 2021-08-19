@@ -35,8 +35,8 @@ public final class SomniaCommand {
                 .then(Commands.literal("set")
                     .then(Commands.argument("amount", DoubleArgumentType.doubleArg())
                         .executes(ctx -> setFatigue(DoubleArgumentType.getDouble(ctx, "amount"), ctx.getSource().getPlayerOrException()))
-                    .then(Commands.argument("target", EntityArgument.players())
-                        .executes(ctx -> setFatigue(DoubleArgumentType.getDouble(ctx, "amount"), EntityArgument.getPlayer(ctx, "targets")))))))
+                        .then(Commands.argument("target", EntityArgument.player())
+                            .executes(ctx -> setFatigue(DoubleArgumentType.getDouble(ctx, "amount"), EntityArgument.getPlayer(ctx, "target")))))))
 
             .then(Commands.literal("override")
                 .then(Commands.literal("add")
@@ -82,7 +82,7 @@ public final class SomniaCommand {
         List<String> overrides = OVERRIDES.stream()
                 .map(sender.level::getPlayerByUUID)
                 .filter(Objects::nonNull)
-                .map(player -> player.getName().toString())
+                .map(player -> player.getName().getContents())
                 .toList();
 
         Component chatComponent = new TextComponent(!overrides.isEmpty() ? String.join(", ", overrides) : "Nothing to see here...");
