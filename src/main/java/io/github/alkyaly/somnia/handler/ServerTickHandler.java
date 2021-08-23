@@ -61,7 +61,7 @@ public class ServerTickHandler {
         }
 
         if (currentState == SIMULATING) {
-            doMultipliedTicking();
+            multiplyTick();
         }
     }
 
@@ -77,7 +77,7 @@ public class ServerTickHandler {
                 });
     }
 
-    private void doMultipliedTicking() {
+    private void multiplyTick() {
         double target = multiplier + overflow;
         int flooredTarget = (int) target;
         overflow = target - flooredTarget;
@@ -85,7 +85,7 @@ public class ServerTickHandler {
         long timeMillis = System.currentTimeMillis();
 
         for (int i = 0; i < flooredTarget; i++) {
-            doMultipliedServerTicking();
+            multiplyServerTick();
         }
 
         multiplier += (System.currentTimeMillis() - timeMillis <= Somnia.CONFIG.logic.delta / tickHandlers) ? 0.1 : -0.1;
@@ -94,7 +94,7 @@ public class ServerTickHandler {
         if (multiplier < Somnia.CONFIG.logic.baseMultiplier) multiplier = Somnia.CONFIG.logic.baseMultiplier;
     }
 
-    private void doMultipliedServerTicking() {
+    private void multiplyServerTick() {
         levelServer.players().forEach(EventHandler::tickPlayer);
         levelServer.tick(() -> ((MinecraftServerAccessor) levelServer.getServer()).somnia$invokeHaveTime());
         levelServer.getServer().getPlayerList().broadcastAll(new ClientboundSetTimePacket(levelServer.getGameTime(), levelServer.getDayTime(), levelServer.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)), levelServer.dimension());

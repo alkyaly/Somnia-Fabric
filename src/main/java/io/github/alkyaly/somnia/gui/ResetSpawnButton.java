@@ -8,16 +8,20 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public class ResetSpawnButton extends Button {
+    private static final Component YES = new TranslatableComponent("somnia.button.reset_yes");
+    private static final Component NO = new TranslatableComponent("somnia.button.reset_no");
+
     private boolean resetSpawn = true;
 
     public ResetSpawnButton(int xIn, int yIn, int widthIn, int heightIn) {
-        super(xIn, yIn, widthIn, heightIn, new TextComponent("Reset spawn: Yes"), button -> {
+        super(xIn, yIn, widthIn, heightIn, YES, button -> {
             ResetSpawnButton reset = (ResetSpawnButton) button;
             reset.resetSpawn = !reset.resetSpawn;
-            button.setMessage(new TextComponent("Reset spawn: " + (reset.resetSpawn ? "Yes" : "No")));
+            button.setMessage(reset.resetSpawn ? YES : NO);
             Minecraft mc = Minecraft.getInstance();
             if (mc.player == null) return;
 

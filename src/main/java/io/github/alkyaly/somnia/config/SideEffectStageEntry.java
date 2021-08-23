@@ -41,8 +41,7 @@ public class SideEffectStageEntry {
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
-        if (obj == null || obj.getClass() != this.getClass()) return false;
-        var that = (SideEffectStageEntry) obj;
+        if (!(obj instanceof SideEffectStageEntry that)) return false;
         return this.minFatigue == that.minFatigue &&
                 this.maxFatigue == that.maxFatigue &&
                 Objects.equals(this.potionId, that.potionId) &&

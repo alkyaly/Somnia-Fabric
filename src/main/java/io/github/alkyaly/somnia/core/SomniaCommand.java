@@ -16,6 +16,7 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.HashSet;
@@ -67,7 +68,7 @@ public final class SomniaCommand {
 
     private static int addOverride(ServerPlayer player) {
         if (!OVERRIDES.add(player.getUUID()))
-            player.displayClientMessage(new TextComponent("Override already exists"), true);
+            player.displayClientMessage(new TranslatableComponent("somnia.command.override_invalid"), true);
 
         return Command.SINGLE_SUCCESS;
     }
@@ -85,7 +86,7 @@ public final class SomniaCommand {
                 .map(player -> player.getName().getContents())
                 .toList();
 
-        Component chatComponent = new TextComponent(!overrides.isEmpty() ? String.join(", ", overrides) : "Nothing to see here...");
+        Component chatComponent = overrides.isEmpty() ? new TranslatableComponent("somnia.command.nothing") : new TextComponent(String.join(", ", overrides));
         sender.displayClientMessage(chatComponent, false);
         return Command.SINGLE_SUCCESS;
     }

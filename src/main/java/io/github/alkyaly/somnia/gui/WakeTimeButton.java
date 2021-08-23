@@ -10,16 +10,17 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
 public class WakeTimeButton extends Button {
     private final String hoverText;
-    private final String buttonText;
+    private final Component buttonText;
 
-    public WakeTimeButton(int x, int y, int widthIn, int heightIn, String buttonText, long wakeTime) {
-        super(x, y, widthIn, heightIn, new TextComponent(buttonText), button -> {
+    public WakeTimeButton(int x, int y, int widthIn, int heightIn, Component buttonText, long wakeTime) {
+        super(x, y, widthIn, heightIn, buttonText, button -> {
             Minecraft mc = Minecraft.getInstance();
             if (mc.level == null) return;
 
@@ -51,6 +52,6 @@ public class WakeTimeButton extends Button {
     @Override
     public void renderButton(PoseStack pose, int mouseX, int mouseY, float partialTicks) {
         super.renderButton(pose, mouseX, mouseY, partialTicks);
-        this.setMessage(new TextComponent(this.isHovered ? this.hoverText : this.buttonText));
+        this.setMessage(this.isHovered ? new TextComponent(hoverText) : buttonText);
     }
 }

@@ -8,6 +8,8 @@ import io.github.alkyaly.somnia.core.SomniaClient;
 import io.github.alkyaly.somnia.network.NetworkHandler;
 import io.github.alkyaly.somnia.util.SideEffectStage;
 import io.github.alkyaly.somnia.core.Somnia;
+import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
+import it.unimi.dsi.fastutil.doubles.DoubleList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -40,7 +42,7 @@ public final class ClientTickHandler {
     private static final ItemStack CLOCK = new ItemStack(Items.CLOCK);
 
     private final Minecraft mc = Minecraft.getInstance();
-    private final List<Double> speedValues = new ArrayList<>();
+    private final DoubleList speedValues = new DoubleArrayList();
     private long sleepStart = -1;
     private double speed;
     private boolean muted;
@@ -83,7 +85,7 @@ public final class ClientTickHandler {
     public void addSpeedValue(double speed) {
         this.speed = speed;
         speedValues.add(speed);
-        if (speedValues.size() > 5) speedValues.remove(0);
+        if (speedValues.size() > 5) speedValues.removeDouble(0);
     }
 
     //I'd love to use HudRenderCallback, but getting a component every FRAME might be really bad.
@@ -161,11 +163,14 @@ public final class ClientTickHandler {
 
                 int offsetX = "center".equalsIgnoreCase(display) ? screen.width / 2 - 80 : "right".equalsIgnoreCase(display) ? width - 160 : 0;
                 renderScaledString(pose, offsetX + 20, String.format("%sx%s", SpeedColor.getColorForSpeed(speed).code, MULTIPLIER_FORMAT.format(speed)));
-                double average = speedValues.stream()
-                        .filter(Objects::nonNull)
-                        .mapToDouble(Double::doubleValue)
-                        .summaryStatistics()
-                        .getAverage();
+
+                double sum = 0;
+                //avoids creating a DoubleSummaryStatistics and a Stream every frame
+                for (double value : speedValues) {
+                    sum += value;
+                }
+                double average = speedValues.isEmpty() ? 0 : sum / speedValues.size();
+
                 long eta = Math.round((remaining - sleepDuration) / (average * 20));
 
                 if (SomniaClient.easterEggActive) {

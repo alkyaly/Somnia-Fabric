@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import draylar.omegaconfig.api.Comment;
 import draylar.omegaconfig.api.Config;
 import io.github.alkyaly.somnia.core.Somnia;
-import io.github.alkyaly.somnia.handler.ClientTickHandler;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
