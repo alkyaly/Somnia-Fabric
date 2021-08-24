@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import org.lwjgl.opengl.GL11;
 
 public final class MixinHooks {
@@ -28,10 +29,10 @@ public final class MixinHooks {
         return true;
     }
 
-    public static void updateWakeTime(ServerPlayer player) {
+    public static void updateWakeTime(Player player) {
         Fatigue props = Components.get(player);
 
-        if (props != null) {
+        if (props != null && player instanceof ServerPlayer serverPlayer) {
             if (props.getWakeTime() < 0) {
                 long totalWorldTime = player.level.getGameTime();
                 long wakeTime = SomniaUtil.calculateWakeTime(totalWorldTime, totalWorldTime % 24000 > 12000 ? 0 : 12000);
@@ -39,7 +40,7 @@ public final class MixinHooks {
 
                 FriendlyByteBuf buf = PacketByteBufs.create();
                 buf.writeLong(wakeTime);
-                ServerPlayNetworking.send(player, NetworkHandler.UPDATE_WAKE_TIME, buf);
+                ServerPlayNetworking.send(serverPlayer, NetworkHandler.UPDATE_WAKE_TIME, buf);
             }
         }
     }
@@ -50,9 +51,5 @@ public final class MixinHooks {
             return true;
         }
         return false;
-    }
-
-    public static boolean ignoreMonsters() {
-        return Somnia.CONFIG.options.ignoreMonsters;
     }
 }

@@ -12,6 +12,7 @@ import io.github.alkyaly.somnia.util.MixinHooks;
 import io.github.alkyaly.somnia.util.SideEffectStage;
 import io.github.alkyaly.somnia.util.SomniaUtil;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.entity.event.v1.EntitySleepEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -19,7 +20,6 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
@@ -33,13 +33,13 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import top.theillusivec4.somnus.api.PlayerSleepEvents;
 
 import java.util.Iterator;
 
@@ -51,9 +51,10 @@ public final class EventHandler {
         ServerWorldEvents.LOAD.register(EventHandler::levelLoadHook);
         ServerWorldEvents.UNLOAD.register(EventHandler::levelUnloadHook);
         ServerPlayConnectionEvents.JOIN.register(EventHandler::syncFatigue);
-        PlayerSleepEvents.TRY_SLEEP.register(EventHandler::onPlayerSleepInBed);
-        PlayerSleepEvents.CAN_SLEEP_NOW.register(EventHandler::onSleepingTimeCheck);
-        PlayerSleepEvents.WAKE_UP.register(EventHandler::onWakeUp);
+        EntitySleepEvents.ALLOW_SLEEPING.register(EventHandler::onPlayerSleepInBed);
+        EntitySleepEvents.ALLOW_SLEEP_TIME.register(EventHandler::onSleepingTimeCheck);
+        EntitySleepEvents.STOP_SLEEPING.register(EventHandler::onWakeUp);
+        EntitySleepEvents.ALLOW_NEARBY_MONSTERS.register(EventHandler::cancelMonsterCheck);
         UseBlockCallback.EVENT.register(EventHandler::onRightClickBlock);
     }
 
@@ -63,7 +64,7 @@ public final class EventHandler {
     }
 
     //Forge: PlayerSleepInBedEvent on ForgeEventHandler
-    private static Player.BedSleepingProblem onPlayerSleepInBed(ServerPlayer player, BlockPos pos) {
+    private static Player.BedSleepingProblem onPlayerSleepInBed(Player player, BlockPos pos) {
         if (!SomniaUtil.checkFatigue(player)) {
             player.displayClientMessage(new TranslatableComponent("somnia.status.cooldown"), true);
             return Player.BedSleepingProblem.OTHER_PROBLEM;
@@ -83,18 +84,18 @@ public final class EventHandler {
     }
 
     //Forge: SleepTimeCheckEvent on ForgeEventHandler
-    private static TriState onSleepingTimeCheck(Player player, BlockPos pos) {
+    private static InteractionResult onSleepingTimeCheck(Player player, BlockPos pos, boolean day) {
         Fatigue props = Components.get(player);
 
         if (props != null) {
             if (props.shouldSleepNormally()) {
-                return TriState.DEFAULT;
+                return InteractionResult.PASS;
             }
         }
 
-        if (SomniaUtil.isEnterSleepTime()) return TriState.TRUE;
+        if (SomniaUtil.isEnterSleepTime()) return InteractionResult.SUCCESS;
 
-        return TriState.DEFAULT;
+        return InteractionResult.PASS;
     }
 
     //Forge: PlayerInteractEvent.RightClickBlock on ForgeEventHandler
@@ -120,10 +121,12 @@ public final class EventHandler {
     }
 
     //Forge: PlayerWakeUpEvent on ForgeEventHandler
-    private static void onWakeUp(Player player, boolean reset, boolean update) {
-        Fatigue props = Components.get(player);
+    private static void onWakeUp(LivingEntity entity, BlockPos pos) {
+        if (entity instanceof Player player) {
+            Fatigue props = Components.get(player);
 
-        if (props != null) {
+            if (props == null) return;
+
             if (props.shouldSleepNormally()) {
                 props.setFatigue(props.getFatigue() - SomniaUtil.getFatigueToReplenish(player));
             }
@@ -152,6 +155,10 @@ public final class EventHandler {
                 break;
             }
         }
+    }
+
+    private static InteractionResult cancelMonsterCheck(Player player, BlockPos pos, boolean result) {
+        return Somnia.CONFIG.options.ignoreMonsters ? InteractionResult.SUCCESS : InteractionResult.PASS;
     }
 
     private static void syncFatigue(ServerGamePacketListenerImpl handler, PacketSender sender, MinecraftServer server) {

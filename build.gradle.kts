@@ -25,10 +25,6 @@ group = "io.github.alkyaly"
 repositories {
     mavenLocal()
     maven {
-        name = "Somnus"
-        url = uri("https://maven.theillusivec4.top")
-    }
-    maven {
         name = "Ladysnake Mods"
         url = uri("https://ladysnake.jfrog.io/artifactory/mods")
     }
@@ -36,11 +32,18 @@ repositories {
         name = "Curse Maven"
         url = uri("https://www.cursemaven.com")
     }
+    maven {
+        name = "Parchment"
+        url = uri("https://maven.parchmentmc.org")
+    }
 }
 
 dependencies {
     minecraft("com.mojang:minecraft:$versionMc")
-    mappings(loom.officialMojangMappings())
+    mappings(loom.layered() {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-1.17.1:2021.08.23-nightly-SNAPSHOT")
+    })
     modImplementation("net.fabricmc:fabric-loader:$versionFLoader")
 
     modImplementation("net.fabricmc.fabric-api:fabric-api:$versionFAPI")
@@ -50,10 +53,6 @@ dependencies {
 
     modImplementation("draylar.omega-config:omega-config-base:$versionOmegaConfig")
     include("draylar.omega-config:omega-config-base:$versionOmegaConfig:min")
-
-    //todo: soon this will not be needed https://github.com/FabricMC/fabric/pull/1633
-    modImplementation("top.theillusivec4.somnus:somnus-fabric:$versionSomnus")
-    include("top.theillusivec4.somnus:somnus-fabric:$versionSomnus")
 
     modRuntime("curse.maven:comforts-433539:3347978")
 }
