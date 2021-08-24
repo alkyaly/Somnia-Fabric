@@ -1,7 +1,7 @@
 plugins {
     java
     `maven-publish`
-    id("fabric-loom") version "0.8-SNAPSHOT"
+    id("fabric-loom") version "0.9-SNAPSHOT"
     id("io.github.juuxel.loom-quiltflower") version "1.3.0"
 }
 
@@ -23,7 +23,7 @@ version = versionMajor + "." + versionMinor + (if (versionPatch != "0") ".$versi
 group = "io.github.alkyaly"
 
 repositories {
-    mavenLocal() //My version of OmegaConfig because my PRs never got merged
+    mavenLocal()
     maven {
         name = "Somnus"
         url = uri("https://maven.theillusivec4.top")
@@ -40,7 +40,7 @@ repositories {
 
 dependencies {
     minecraft("com.mojang:minecraft:$versionMc")
-    mappings(minecraft.officialMojangMappings())
+    mappings(loom.officialMojangMappings())
     modImplementation("net.fabricmc:fabric-loader:$versionFLoader")
 
     modImplementation("net.fabricmc.fabric-api:fabric-api:$versionFAPI")
