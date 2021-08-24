@@ -165,7 +165,7 @@ public final class ClientTickHandler {
                 renderScaledString(pose, offsetX + 20, String.format("%sx%s", SpeedColor.getColorForSpeed(speed).code, MULTIPLIER_FORMAT.format(speed)));
 
                 double sum = 0;
-                //avoids creating a DoubleSummaryStatistics and a Stream every frame
+                //avoids creating a DoubleSummaryStatistics and a Stream every tick
                 for (double value : speedValues) {
                     sum += value;
                 }

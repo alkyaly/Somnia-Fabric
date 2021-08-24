@@ -224,8 +224,7 @@ public final class EventHandler {
                         }
                     }
 
-                    for (int i = 0; i < Somnia.CONFIG.fatigue.sideEffectStages.size(); i++) {
-                        SideEffectStage stage = stages[i];
+                    for (SideEffectStage stage : stages) {
                         boolean permanent = stage.duration() < 0;
                         if (fatigue >= stage.minFatigue() && fatigue <= stage.maxFatigue() && (permanent || lastSideEffectStage < stage.minFatigue())) {
                             if (!permanent) props.setSideEffectStage(stage.minFatigue());

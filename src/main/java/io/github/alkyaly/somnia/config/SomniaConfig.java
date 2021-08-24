@@ -53,7 +53,7 @@ public class SomniaConfig implements Config {
         );
         @Comment("""
                 Definitions of fatigue replenishing items.
-                Each list consist of an item registry name, the amount of fatigue it replenishes,
+                Each entry consist of an item registry name, the amount of fatigue it replenishes,
                 and a fatigue rate modifier.
                 """)
         public List<ReplenishingItemEntry> replenishingItems = Arrays.asList(
