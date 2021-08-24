@@ -95,7 +95,6 @@ public class SomniaMixinPlugin implements IMixinConfigPlugin {
         }
     }
 
-    //todo: Can be removed when loader updates mixin (FabricMC/Mixin#52)
     /*
         Initially, this was a mixin at the HEAD of "renderLevel".
         Then, I realized, it's slow and unperformant to do so.
