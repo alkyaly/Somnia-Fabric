@@ -4,6 +4,7 @@
   "package": "io.github.alkyaly.somnia.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
+    "BedBlockMixin",
     "LivingEntityMixin",
     "PlayerMixin",
     "ServerChunkCacheMixin",

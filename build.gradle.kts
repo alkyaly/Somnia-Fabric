@@ -53,8 +53,6 @@ dependencies {
 
     modImplementation("draylar.omega-config:omega-config-base:$versionOmegaConfig")
     include("draylar.omega-config:omega-config-base:$versionOmegaConfig:min")
-
-    modRuntime("curse.maven:comforts-433539:3347978")
 }
 
 tasks.processResources {

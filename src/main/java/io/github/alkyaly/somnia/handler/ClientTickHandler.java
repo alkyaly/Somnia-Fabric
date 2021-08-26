@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.alkyaly.somnia.api.capability.Components;
 import io.github.alkyaly.somnia.api.capability.Fatigue;
-import io.github.alkyaly.somnia.core.SomniaClient;
 import io.github.alkyaly.somnia.network.NetworkHandler;
 import io.github.alkyaly.somnia.util.SideEffectStage;
 import io.github.alkyaly.somnia.core.Somnia;
@@ -21,9 +20,7 @@ import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -38,7 +35,7 @@ public final class ClientTickHandler {
     public static final ClientTickHandler INSTANCE = new ClientTickHandler();
     private static final DecimalFormat MULTIPLIER_FORMAT = new DecimalFormat("0.0");
 
-    private static final ResourceLocation PINEAPPLE = Somnia.locate("textures/pineapple.png");
+    //private static final ResourceLocation PINEAPPLE = Somnia.locate("textures/pineapple.png");
     private static final ItemStack CLOCK = new ItemStack(Items.CLOCK);
 
     private final Minecraft mc = Minecraft.getInstance();
@@ -101,7 +98,8 @@ public final class ClientTickHandler {
         PoseStack pose = new PoseStack();
 
         if (player != null && !player.isCreative() && !player.isSpectator() && !mc.options.hideGui) {
-            if (!player.isSleeping() && !Somnia.CONFIG.fatigue.fatigueSideEffects && fatigue > Somnia.CONFIG.fatigue.minimumFatigueToSleep) return;
+            if (!player.isSleeping() && !Somnia.CONFIG.fatigue.fatigueSideEffects && fatigue > Somnia.CONFIG.fatigue.minimumFatigueToSleep)
+                return;
 
             String str;
             if (Somnia.CONFIG.fatigue.simpleFatigueDisplay) {
@@ -173,13 +171,14 @@ public final class ClientTickHandler {
 
                 long eta = Math.round((remaining - sleepDuration) / (average * 20));
 
+                /* bad
                 if (SomniaClient.easterEggActive) {
                     renderScaledRainbowString(pose, offsetX + 80, getETAString(eta));
-                }  else {
+                } else {
                     renderScaledString(pose, offsetX + 80, SpeedColor.WHITE.code + getETAString(eta));
-                }
-
-                renderClock(pose, width);
+                }*/
+                renderScaledString(pose, offsetX + 80, SpeedColor.WHITE.code + getETAString(eta));
+                renderClock(width);
             }
         }
     }
@@ -199,7 +198,8 @@ public final class ClientTickHandler {
         }
     }
 
-    private void renderScaledRainbowString(PoseStack pose, int x, String str) {
+    //bad
+    /*private void renderScaledRainbowString(PoseStack pose, int x, String str) {
         if (mc.screen == null) return;
         pose.pushPose();
         pose.translate(x, 20, 0);
@@ -211,7 +211,7 @@ public final class ClientTickHandler {
             x += mc.font.width(to);
         }
         pose.popPose();
-    }
+    }*/
 
     private void renderScaledString(PoseStack pose, int x, String str) {
         if (mc.screen == null) return;
@@ -222,7 +222,7 @@ public final class ClientTickHandler {
         pose.popPose();
     }
 
-    private void renderClock(PoseStack pose, int maxWidth) {
+    private void renderClock(int maxWidth) {
         int x = switch (Somnia.CONFIG.options.somniaGuiClockPosition.toLowerCase(Locale.ROOT)) {
             case "left" -> 40;
             case "center" -> maxWidth / 2;
@@ -230,17 +230,21 @@ public final class ClientTickHandler {
             default -> throw new IllegalArgumentException("Invalid Value: " + Somnia.CONFIG.options.somniaGuiClockPosition);
         };
 
+        PoseStack pose = RenderSystem.getModelViewStack();
+
         pose.pushPose();
-        if (SomniaClient.easterEggActive) {
+        /*if (SomniaClient.easterEggActive) {
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1, 1, 1, 1);
             RenderSystem.setShaderTexture(0, PINEAPPLE);
-            pose.translate(x, 70, 0);
-            pose.scale(.5f, .5f, 1);
-            GuiComponent.blit(pose, 0, 0, 0, 0, 128, 128, 128, 128);
-        } else {
-            mc.getItemRenderer().renderAndDecorateItem(mc.player, CLOCK, x, 35, 21);
-        }
+            //stack.translate(x - 30, 30, 0);
+            stack.scale(.5f, .5f, 1);
+            GuiComponent.blit(stack, 80, 70, 0, 0, 128, 128, 128, 128);
+        } else {*/
+        pose.translate(x - 10, 45, 0);
+        pose.scale(4, 4, 1);
+        mc.getItemRenderer().renderAndDecorateItem(CLOCK, 0, 0);
+        //}
         pose.popPose();
     }
 
