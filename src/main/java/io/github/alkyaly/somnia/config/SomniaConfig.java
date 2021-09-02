@@ -1,6 +1,5 @@
 package io.github.alkyaly.somnia.config;
 
-import com.google.common.collect.ImmutableList;
 import draylar.omegaconfig.api.Comment;
 import draylar.omegaconfig.api.Config;
 import io.github.alkyaly.somnia.core.Somnia;
@@ -45,7 +44,7 @@ public class SomniaConfig implements Config {
                 min fatigue, max fatigue, potion ID, duration, amplifier.
                 For a permanent effect, set the duration to -1.
                 """)
-        public List<SideEffectStageEntry> sideEffectStages = ImmutableList.of(
+        public List<SideEffectStageEntry> sideEffectStages = Arrays.asList(
                 new SideEffectStageEntry(70, 80, "minecraft:nausea", 150, 0),
                 new SideEffectStageEntry(80, 90, "minecraft:slowness", 300, 2),
                 new SideEffectStageEntry(90, 95, "minecraft:poison", 200, 1),

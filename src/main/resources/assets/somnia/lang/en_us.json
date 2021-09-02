@@ -1,4 +1,16 @@
 {
+  "somnia.status.armor": "That armor looks uncomfortable",
+  "somnia.status.cooldown": "You're not tired yet",
+  "somnia.status.expired": "You can't sleep forever",
+  "somnia.status.not_now": "Something is keeping you awake",
+  "somnia.status.waiting": "Waiting for server",
+  "somnia.status.waiting_players": "Waiting for other players to sleep",
+  "somnia.side_effect.0": "Wide Awake",
+  "somnia.side_effect.1": "Tired",
+  "somnia.side_effect.2": "Exhausted",
+  "somnia.side_effect.3": "Sleep Deprived",
+  "somnia.side_effect.4": "Fading",
+
   "somnia.button.cancel": "Cancel",
   "somnia.button.reset_yes": "Reset Spawn: Yes",
   "somnia.button.reset_no": "Reset Spawn: No",
@@ -24,18 +36,6 @@
 
   "somnia.command.override_invalid": "Override already exists",
   "somnia.command.nothing": "Nothing to see here...",
-
-  "somnia.status.armor": "That armor looks uncomfortable",
-  "somnia.status.cooldown": "You're not tired yet",
-  "somnia.status.expired": "You can't sleep forever",
-  "somnia.status.not_now": "Something is keeping you awake",
-  "somnia.status.waiting": "Waiting for server",
-  "somnia.status.waiting_players": "Waiting for other players to sleep",
-  "somnia.side_effect.0": "Wide Awake",
-  "somnia.side_effect.1": "Tired",
-  "somnia.side_effect.2": "Exhausted",
-  "somnia.side_effect.3": "Sleep Deprived",
-  "somnia.side_effect.4": "Fading",
 
   "effect.somnia.awakening": "Wakefulness",
   "item.minecraft.potion.effect.awakening": "Potion of Wakefulness",

@@ -32,6 +32,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -166,9 +167,8 @@ public final class EventHandler {
     }
 
     public static void tickPlayer(Player player) {
-        if (player.level.isClientSide || (!player.isAlive() || player.isCreative() || player.isSpectator() && !player.isSleeping())) {
-            return;
-        }
+        if (player.level.isClientSide) return;
+        if (!player.isAlive() || player.isCreative() || player.isSpectator() && !player.isSleeping()) return;
 
         Fatigue props = Components.get(player);
 
@@ -201,10 +201,10 @@ public final class EventHandler {
             }
 
             if (fatigue > 100) fatigue = 100;
-            else if (fatigue < 0) fatigue = 0;
+            if (fatigue < 0) fatigue = 0;
 
             if (replenishedFatigue > 100) replenishedFatigue = 100;
-            else if (replenishedFatigue < 0) replenishedFatigue = 0;
+            if (replenishedFatigue < 0) replenishedFatigue = 0;
 
             if (extraFatigueRate < 0) extraFatigueRate = 0;
 
@@ -221,21 +221,21 @@ public final class EventHandler {
                 if (Somnia.CONFIG.fatigue.fatigueSideEffects) {
                     int lastSideEffectStage = props.getSideEffectStage();
                     SideEffectStage[] stages = SideEffectStage.getSideEffectStages();
-                    SideEffectStage firstStage = stages[0];
-                    if (fatigue < firstStage.minFatigue()) {
+
+                    if (fatigue < stages[0].minFatigue()) {
                         props.setSideEffectStage(-1);
-                        for (SideEffectStage stage : stages) {
-                            if (lastSideEffectStage < stage.minFatigue()) {
-                                player.removeEffect(Registry.MOB_EFFECT.get(new ResourceLocation(stage.potionId())));
-                            }
-                        }
                     }
 
                     for (SideEffectStage stage : stages) {
                         boolean permanent = stage.duration() < 0;
-                        if (fatigue >= stage.minFatigue() && fatigue <= stage.maxFatigue() && (permanent || lastSideEffectStage < stage.minFatigue())) {
-                            if (!permanent) props.setSideEffectStage(stage.minFatigue());
-                            player.addEffect(new MobEffectInstance(Registry.MOB_EFFECT.get(new ResourceLocation(stage.potionId())), permanent ? 150 : stage.duration(), stage.amplifier()));
+
+                        if (fatigue >= stage.minFatigue() && fatigue <= stage.maxFatigue()) {
+                            props.setSideEffectStage(stage.minFatigue());
+
+                            if (permanent || lastSideEffectStage < stage.minFatigue()) {
+                                MobEffect eff = Registry.MOB_EFFECT.get(new ResourceLocation(stage.potionId()));
+                                player.addEffect(new MobEffectInstance(eff, permanent ? 150 : stage.duration(), stage.amplifier()));
+                            }
                         }
                     }
                 }

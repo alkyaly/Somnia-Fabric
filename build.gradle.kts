@@ -40,7 +40,7 @@ repositories {
 
 dependencies {
     minecraft("com.mojang:minecraft:$versionMc")
-    mappings(loom.layered() {
+    mappings(loom.layered {
         officialMojangMappings()
         parchment("org.parchmentmc.data:parchment-1.17.1:2021.08.23-nightly-SNAPSHOT")
     })
