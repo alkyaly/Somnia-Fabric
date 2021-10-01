@@ -19,17 +19,11 @@ public class SomniaConfig implements Config {
 
     public static class Fatigue {
         //Fatigue
-        @Comment("""
-                The fatigue counter's position.
-                Accepted values: TOP_CENTER, TOP_LEFT, TOP_RIGHT, BOTTOM_CENTER, BOTTOM_LEFT, BOTTOM_RIGHT.
-                """)
+        @Comment("The fatigue counter's position. Accepted values: TOP_CENTER, TOP_LEFT, TOP_RIGHT, BOTTOM_CENTER, BOTTOM_LEFT, BOTTOM_RIGHT.")
         public String displayFatigue = "BOTTOM_RIGHT";
         @Comment("Simplifies the numerical fatigue counter to words")
         public boolean simpleFatigueDisplay = false;
-        @Comment("""
-                The ETA and multiplier display position in Somnia's sleep gui.
-                Accepted values: right, center, left
-                """)
+        @Comment("The ETA and multiplier display position in Somnia's sleep gui. Accepted values: right, center, left.")
         public String displayETASleep = "left";
         @Comment("Fatigue is incremented by this number every tick")
         public double fatigueRate = 0.00208;
@@ -41,8 +35,8 @@ public class SomniaConfig implements Config {
         public double minimumFatigueToSleep = 20;
         @Comment("""
                 Definitions of each side effect stage in order:
-                min fatigue, max fatigue, potion ID, duration, amplifier.
-                For a permanent effect, set the duration to -1.
+                    //min fatigue, max fatigue, potion ID, duration, amplifier.
+                    //For a permanent effect, set the duration to -1.
                 """)
         public List<SideEffectStageEntry> sideEffectStages = Arrays.asList(
                 new SideEffectStageEntry(70, 80, "minecraft:nausea", 150, 0),
@@ -52,8 +46,8 @@ public class SomniaConfig implements Config {
         );
         @Comment("""
                 Definitions of fatigue replenishing items.
-                Each entry consist of an item registry name, the amount of fatigue it replenishes,
-                and a fatigue rate modifier.
+                    //Each entry consist of an item registry name, the amount of fatigue it replenishes,
+                    //and a fatigue rate modifier.
                 """)
         public List<ReplenishingItemEntry> replenishingItems = Arrays.asList(
                 new ReplenishingItemEntry("mod:item", 10) //I have to find a fabric mod that adds tea or coffee lol...
@@ -64,10 +58,10 @@ public class SomniaConfig implements Config {
         //Logic
         @Comment("""
                 If the time difference (mc) between multiplied ticking is greater than this,
-                the simulation multiplier is lowered. Otherwise, it's increased.
-                Lowering this number might slow down simulation and improve performance.
-                Don't mess around with it if you don't know what you're doing.
-                Range: 1 ~ 50.
+                    //the simulation multiplier is lowered. Otherwise, it's increased.
+                    //Lowering this number might slow down simulation and improve performance.
+                    //Don't mess around with it if you don't know what you're doing.
+                    //Range: 1 ~ 50.
                 """)
         public double delta = 50;
         @Comment("Minimum tick speed multiplier, activated during sleep")
@@ -88,10 +82,7 @@ public class SomniaConfig implements Config {
         public boolean sleepWithArmor = false;
         @Comment("Provides an enhanced sleeping gui")
         public boolean somniaGui = true;
-        @Comment("""
-                The display position of the clock in somnia's enhanced sleeping gui.
-                Accepted values: right, center, left.
-                """)
+        @Comment("The display position of the clock in somnia's enhanced sleeping gui. Accepted values: right, center, left.")
         public String somniaGuiClockPosition = "right";
         @Comment("The item used to select wake time")
         public String wakeTimeSelectItem = "minecraft:clock";
@@ -108,25 +99,13 @@ public class SomniaConfig implements Config {
 
     public static class Timings {
         //Timings
-        @Comment("""
-                Specifies the start of the period in which the player can enter sleep.
-                Range: 0 ~ 24000.
-                """)
+        @Comment("Specifies the start of the period in which the player can enter sleep. Range: 0 ~ 24000.")
         public int enterSleepStart = 0;
-        @Comment("""
-                Specifies the end of the period in which the player can enter sleep.
-                Range: 0 ~ 24000.
-                """)
+        @Comment("Specifies the end of the period in which the player can enter sleep. Range: 0 ~ 24000.")
         public int enterSleepEnd = 24000;
-        @Comment("""
-                Specifies the start of the valid sleep period.
-                Range: 0 ~ 24000.
-                """)
+        @Comment("Specifies the start of the valid sleep period. Range: 0 ~ 24000.")
         public int validSleepStart = 0;
-        @Comment("""
-                Specifies the end of the valid sleep period.
-                Range: 0 ~ 24000.
-                """)
+        @Comment("Specifies the end of the valid sleep period. Range: 0 ~ 24000.")
         public int validSleepEnd = 24000;
     }
 
