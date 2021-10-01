@@ -20,6 +20,5 @@
   ],
   "injectors": {
     "defaultRequire": 1
-  },
-  "plugin": "io.github.alkyaly.somnia.mixin.SomniaMixinPlugin"
+  }
 }

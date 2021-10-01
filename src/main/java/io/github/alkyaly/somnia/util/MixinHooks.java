@@ -45,8 +45,8 @@ public final class MixinHooks {
         }
     }
 
-    public static boolean skipRenderLevel() {
-        if (Minecraft.getInstance().player.isSleeping() && Somnia.CONFIG.performance.disableRendering) {
+    public static boolean skipRenderLevel(Minecraft mc) {
+        if (mc.player.isSleeping() && Somnia.CONFIG.performance.disableRendering) {
             RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT, false);
             return true;
         }
