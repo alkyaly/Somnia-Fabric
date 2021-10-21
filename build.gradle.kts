@@ -17,7 +17,6 @@ val versionClassifier: String by project
 
 val versionCCA: String by project
 val versionOmegaConfig: String by project
-val versionSomnus: String by project
 
 version = versionMajor + "." + versionMinor + (if (versionPatch != "0") ".$versionPatch" else "") + (if (versionClassifier.isNotEmpty()) "-$versionClassifier" else "") + "+fabric-$versionMc"
 group = "io.github.alkyaly"
@@ -52,7 +51,7 @@ dependencies {
     modImplementation("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:$versionCCA")
 
     modImplementation("draylar.omega-config:omega-config-base:$versionOmegaConfig")
-    include("draylar.omega-config:omega-config-base:$versionOmegaConfig:min")
+    include("draylar.omega-config:omega-config-base:$versionOmegaConfig")
 }
 
 tasks.processResources {
