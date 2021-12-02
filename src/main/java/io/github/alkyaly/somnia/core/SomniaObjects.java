@@ -1,6 +1,5 @@
 package io.github.alkyaly.somnia.core;
 
-import io.github.alkyaly.somnia.mixin.accessor.PotionBrewingAccessor;
 import io.github.alkyaly.somnia.object.ExtendedMobEffect;
 import net.minecraft.core.Registry;
 import net.minecraft.world.effect.MobEffect;
@@ -9,6 +8,8 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.Potions;
+
+import static io.github.alkyaly.somnia.mixin.accessor.PotionBrewingAccessor.somnia$invokeAddMix;
 
 public final class SomniaObjects {
     public static final MobEffect AWAKENING_EFFECT = new ExtendedMobEffect(MobEffectCategory.BENEFICIAL, 0x00ffee);
@@ -42,11 +43,11 @@ public final class SomniaObjects {
     }
 
     static void setupPotions() {
-        PotionBrewingAccessor.somnia$invokeAddMix(Potions.NIGHT_VISION, Items.GLISTERING_MELON_SLICE, AWAKENING_POTION);
-        PotionBrewingAccessor.somnia$invokeAddMix(Potions.LONG_NIGHT_VISION, Items.GLISTERING_MELON_SLICE, LONG_AWAKENING_POTION);
-        PotionBrewingAccessor.somnia$invokeAddMix(Potions.NIGHT_VISION, Items.BLAZE_POWDER, STRONG_AWAKENING_POTION);
-        PotionBrewingAccessor.somnia$invokeAddMix(AWAKENING_POTION, Items.FERMENTED_SPIDER_EYE, INSOMNIA_POTION);
-        PotionBrewingAccessor.somnia$invokeAddMix(LONG_AWAKENING_POTION, Items.FERMENTED_SPIDER_EYE, LONG_INSOMNIA_POTION);
-        PotionBrewingAccessor.somnia$invokeAddMix(STRONG_AWAKENING_POTION, Items.FERMENTED_SPIDER_EYE, STRONG_INSOMNIA_POTION);
+        somnia$invokeAddMix(Potions.NIGHT_VISION, Items.GLISTERING_MELON_SLICE, AWAKENING_POTION);
+        somnia$invokeAddMix(Potions.LONG_NIGHT_VISION, Items.GLISTERING_MELON_SLICE, LONG_AWAKENING_POTION);
+        somnia$invokeAddMix(Potions.NIGHT_VISION, Items.BLAZE_POWDER, STRONG_AWAKENING_POTION);
+        somnia$invokeAddMix(AWAKENING_POTION, Items.FERMENTED_SPIDER_EYE, INSOMNIA_POTION);
+        somnia$invokeAddMix(LONG_AWAKENING_POTION, Items.FERMENTED_SPIDER_EYE, LONG_INSOMNIA_POTION);
+        somnia$invokeAddMix(STRONG_AWAKENING_POTION, Items.FERMENTED_SPIDER_EYE, STRONG_INSOMNIA_POTION);
     }
 }

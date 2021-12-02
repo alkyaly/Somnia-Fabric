@@ -1,11 +1,11 @@
 plugins {
     java
     `maven-publish`
-    id("fabric-loom") version "0.9-SNAPSHOT"
-    id("io.github.juuxel.loom-quiltflower") version "1.3.0"
+    id("fabric-loom") version "0.10-SNAPSHOT"
+    id("io.github.juuxel.loom-quiltflower-mini") version "1.1.0"
 }
 
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(16))
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 
 val versionMc: String by project
 val versionFLoader: String by project
@@ -39,10 +39,7 @@ repositories {
 
 dependencies {
     minecraft("com.mojang:minecraft:$versionMc")
-    mappings(loom.layered {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-1.17.1:2021.08.23-nightly-SNAPSHOT")
-    })
+    mappings(loom.officialMojangMappings())
     modImplementation("net.fabricmc:fabric-loader:$versionFLoader")
 
     modImplementation("net.fabricmc.fabric-api:fabric-api:$versionFAPI")
@@ -64,7 +61,7 @@ tasks.processResources {
 
 tasks.withType(JavaCompile::class).configureEach {
     options.encoding = "UTF-8"
-    options.release.set(16)
+    options.release.set(17)
 }
 
 java {

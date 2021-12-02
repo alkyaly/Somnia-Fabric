@@ -1,9 +1,10 @@
 package io.github.alkyaly.somnia.api.capability;
 
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import dev.onyxstudios.cca.api.v3.entity.PlayerComponent;
 
-public interface Fatigue extends PlayerComponent<Fatigue>, AutoSyncedComponent {
+public interface Fatigue extends PlayerComponent<Fatigue>, AutoSyncedComponent, ServerTickingComponent {
     double getFatigue();
 
     void setFatigue(double fatigue);
@@ -46,4 +47,6 @@ public interface Fatigue extends PlayerComponent<Fatigue>, AutoSyncedComponent {
     double getReplenishedFatigue();
 
     void setReplenishedFatigue(double replenishedFatigue);
+
+    @Override void serverTick();
 }

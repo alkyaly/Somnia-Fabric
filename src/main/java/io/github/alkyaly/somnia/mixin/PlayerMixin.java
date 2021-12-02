@@ -2,7 +2,6 @@ package io.github.alkyaly.somnia.mixin;
 
 import io.github.alkyaly.somnia.api.capability.Components;
 import io.github.alkyaly.somnia.api.capability.Fatigue;
-import io.github.alkyaly.somnia.handler.EventHandler;
 import io.github.alkyaly.somnia.handler.PlayerSleepTickHandler;
 import io.github.alkyaly.somnia.network.NetworkHandler;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -52,11 +51,6 @@ public abstract class PlayerMixin extends LivingEntity {
     @Inject(at = @At("HEAD"), method = "tick()V")
     private void somnia$preSleepingTick(CallbackInfo info) {
         PlayerSleepTickHandler.onPlayerTick(true, (Player) (Object) this);
-    }
-
-    @Inject(at = @At("HEAD"), method = "tick()V")
-    private void somnia$tickPlayer(CallbackInfo ci) {
-        EventHandler.tickPlayer((Player) (Object) this);
     }
 
     @Inject(at = @At("TAIL"), method = "tick()V")

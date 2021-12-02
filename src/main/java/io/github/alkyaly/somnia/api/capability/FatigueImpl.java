@@ -1,8 +1,10 @@
 package io.github.alkyaly.somnia.api.capability;
 
+import io.github.alkyaly.somnia.handler.EventHandler;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 
 public class FatigueImpl implements Fatigue {
     private double fatigue, extraFatigueRate, replenishedFatigue;
@@ -10,7 +12,10 @@ public class FatigueImpl implements Fatigue {
     private boolean resetSpawn = true, sleepOverride, sleepNormally;
     private long wakeTime = -1;
 
-    protected FatigueImpl() {
+    private final Player player;
+
+    protected FatigueImpl(Player player) {
+        this.player = player;
     }
 
     @Override
@@ -134,5 +139,10 @@ public class FatigueImpl implements Fatigue {
     @Override
     public void writeSyncPacket(FriendlyByteBuf buf, ServerPlayer recipient) {
         buf.writeDouble(this.fatigue);
+    }
+
+    @Override
+    public void serverTick() {
+        EventHandler.tickPlayer(player, this);
     }
 }

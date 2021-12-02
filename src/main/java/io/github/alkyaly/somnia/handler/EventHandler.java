@@ -166,11 +166,8 @@ public final class EventHandler {
         Components.sync(handler.player);
     }
 
-    public static void tickPlayer(Player player) {
-        if (player.level.isClientSide) return;
+    public static void tickPlayer(Player player, Fatigue props) {
         if (!player.isAlive() || player.isCreative() || player.isSpectator() && !player.isSleeping()) return;
-
-        Fatigue props = Components.get(player);
 
         if (props != null) {
             double fatigue = props.getFatigue();
