@@ -44,7 +44,6 @@ public final class ClientTickHandler {
     public static final ClientTickHandler INSTANCE = new ClientTickHandler();
     private static final DecimalFormat MULTIPLIER_FORMAT = new DecimalFormat("0.0");
 
-    private static final ResourceLocation PINEAPPLE = Somnia.locate("textures/pineapple.png");
     private static final ItemStack CLOCK = new ItemStack(Items.CLOCK);
 
     private final Minecraft mc = Minecraft.getInstance();
@@ -279,11 +278,11 @@ public final class ClientTickHandler {
 
     @SuppressWarnings("unused")
     public enum FatigueDisplayPosition {
-        CENTER_LEFT((scaledWidth, stringWidth) -> scaledWidth / 2 - stringWidth / 2, (scaledHeight, fontHeight) -> fontHeight),
+        TOP_CENTER((scaledWidth, stringWidth) -> scaledWidth / 2 - stringWidth / 2, (scaledHeight, fontHeight) -> fontHeight),
         TOP_LEFT((scaledWidth, stringWidth) -> 10, (scaledHeight, fontHeight) -> fontHeight),
-        TOP_RIGHT((scaledWidth, stringWidth) -> 10, (scaledHeight, fontHeight) -> scaledHeight - fontHeight - 10),
-        CENTER_RIGHT((scaledWidth, stringWidth) -> scaledWidth / 2 - stringWidth / 2, (scaledHeight, fontHeight) -> scaledHeight - fontHeight - 45),
-        BOTTOM_LEFT((scaledWidth, stringWidth) -> scaledWidth - stringWidth - 10, (scaledHeight, fontHeight) -> fontHeight),
+        TOP_RIGHT((scaledWidth, stringWidth) -> scaledWidth - stringWidth - 10, (scaledHeight, fontHeight) -> fontHeight),
+        BOTTOM_CENTER((scaledWidth, stringWidth) -> scaledWidth / 2 - stringWidth / 2, (scaledHeight, fontHeight) -> scaledHeight - fontHeight - 45),
+        BOTTOM_LEFT((scaledWidth, stringWidth) -> 10, (scaledHeight, fontHeight) -> scaledHeight - fontHeight - 10),
         BOTTOM_RIGHT((scaledWidth, stringWidth) -> scaledWidth - stringWidth - 10, (scaledHeight, fontHeight) -> scaledHeight - fontHeight - 10);
 
         private final BiFunction<Integer, Integer, Integer> x;

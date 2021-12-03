@@ -123,16 +123,4 @@ public class SomniaConfig implements Config {
     public String getExtension() {
         return "json5";
     }
-
-    @Override
-    public void save() {
-        if (fatigue.displayFatigue.equalsIgnoreCase("top_center")) {
-            fatigue.displayFatigue = "CENTER_LEFT";
-        }
-
-        if (fatigue.displayFatigue.equalsIgnoreCase("bottom_center")) {
-            fatigue.displayFatigue = "CENTER_RIGHT";
-        }
-        Config.super.save();
-    }
 }
