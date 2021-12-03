@@ -19,7 +19,7 @@ public class SomniaConfig implements Config {
 
     public static class Fatigue {
         //Fatigue
-        @Comment("The fatigue counter's position. Accepted values: TOP_CENTER, TOP_LEFT, TOP_RIGHT, BOTTOM_CENTER, BOTTOM_LEFT, BOTTOM_RIGHT.")
+        @Comment("The fatigue counter's position. Accepted values: CENTER_LEFT, TOP_LEFT, TOP_RIGHT, CENTER_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.")
         public String displayFatigue = "BOTTOM_RIGHT";
         @Comment("Simplifies the numerical fatigue counter to words")
         public boolean simpleFatigueDisplay = false;
@@ -86,7 +86,7 @@ public class SomniaConfig implements Config {
         public String somniaGuiClockPosition = "right";
         @Comment("The item used to select wake time")
         public String wakeTimeSelectItem = "minecraft:clock";
-        public boolean easterEgg = true;
+        public boolean coolETASleepText = true;
     }
 
     public static class Performance {
@@ -122,5 +122,17 @@ public class SomniaConfig implements Config {
     @Override
     public String getExtension() {
         return "json5";
+    }
+
+    @Override
+    public void save() {
+        if (fatigue.displayFatigue.equalsIgnoreCase("top_center")) {
+            fatigue.displayFatigue = "CENTER_LEFT";
+        }
+
+        if (fatigue.displayFatigue.equalsIgnoreCase("bottom_center")) {
+            fatigue.displayFatigue = "CENTER_RIGHT";
+        }
+        Config.super.save();
     }
 }

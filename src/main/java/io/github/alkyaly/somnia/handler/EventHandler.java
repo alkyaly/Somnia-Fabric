@@ -169,70 +169,70 @@ public final class EventHandler {
     public static void tickPlayer(Player player, Fatigue props) {
         if (!player.isAlive() || player.isCreative() || player.isSpectator() && !player.isSleeping()) return;
 
-        if (props != null) {
-            double fatigue = props.getFatigue();
-            double extraFatigueRate = props.getExtraFatigueRate();
-            double replenishedFatigue = props.getReplenishedFatigue();
-            boolean isSleeping = props.sleepOverride() || player.isSleeping();
+        double fatigue = props.getFatigue();
+        double extraFatigueRate = props.getExtraFatigueRate();
+        double replenishedFatigue = props.getReplenishedFatigue();
+        boolean isSleeping = props.sleepOverride() || player.isSleeping();
 
-            if (isSleeping) {
-                fatigue -= Somnia.CONFIG.fatigue.fatigueReplenishRate;
-                double share = Somnia.CONFIG.fatigue.fatigueReplenishRate / Somnia.CONFIG.fatigue.fatigueRate;
-                double replenish = Somnia.CONFIG.fatigue.fatigueReplenishRate * share;
-                extraFatigueRate -= Somnia.CONFIG.fatigue.fatigueReplenishRate
-                        / share / replenishedFatigue == 0 ? 1 : replenishedFatigue / 10;
-                replenishedFatigue -= replenish;
-            } else {
-                double rate = Somnia.CONFIG.fatigue.fatigueRate;
+        if (isSleeping) {
+            double fatigueReplenishRate = Somnia.CONFIG.fatigue.fatigueReplenishRate;
 
-                MobEffectInstance wakefulness = player.getEffect(SomniaObjects.AWAKENING_EFFECT);
-                if (wakefulness != null) {
-                    rate -= wakefulness.getAmplifier() == 0 ? rate / 4 : rate / 3;
-                }
+            fatigue -= fatigueReplenishRate;
+            double share = fatigueReplenishRate / Somnia.CONFIG.fatigue.fatigueRate;
+            double replenish = fatigueReplenishRate * share;
+            extraFatigueRate -= fatigueReplenishRate
+                    / share / replenishedFatigue == 0 ? 1 : replenishedFatigue / 10;
+            replenishedFatigue -= replenish;
+        } else {
+            double rate = Somnia.CONFIG.fatigue.fatigueRate;
 
-                MobEffectInstance insomnia = player.getEffect(SomniaObjects.INSOMNIA_EFFECT);
-                if (insomnia != null) {
-                    rate += insomnia.getAmplifier() == 0 ? rate / 2 : rate;
-                }
-                fatigue += rate + props.getExtraFatigueRate();
+            MobEffectInstance wakefulness = player.getEffect(SomniaObjects.AWAKENING_EFFECT);
+            if (wakefulness != null) {
+                rate -= wakefulness.getAmplifier() == 0 ? rate / 4 : rate / 3;
             }
 
-            if (fatigue > 100) fatigue = 100;
-            if (fatigue < 0) fatigue = 0;
+            MobEffectInstance insomnia = player.getEffect(SomniaObjects.INSOMNIA_EFFECT);
+            if (insomnia != null) {
+                rate += insomnia.getAmplifier() == 0 ? rate / 2 : rate;
+            }
+            fatigue += rate + props.getExtraFatigueRate();
+        }
 
-            if (replenishedFatigue > 100) replenishedFatigue = 100;
-            if (replenishedFatigue < 0) replenishedFatigue = 0;
+        if (fatigue > 100) fatigue = 100;
+        if (fatigue < 0) fatigue = 0;
 
-            if (extraFatigueRate < 0) extraFatigueRate = 0;
+        if (replenishedFatigue > 100) replenishedFatigue = 100;
+        if (replenishedFatigue < 0) replenishedFatigue = 0;
 
-            props.setFatigue(fatigue);
-            props.setReplenishedFatigue(replenishedFatigue);
-            props.setExtraFatigueRate(extraFatigueRate);
+        if (extraFatigueRate < 0) extraFatigueRate = 0;
 
-            if (props.updateFatigueCounter() >= 100) {
-                props.resetFatigueCounter();
-                FriendlyByteBuf buf = PacketByteBufs.create();
-                buf.writeDouble(fatigue);
-                ServerPlayNetworking.send((ServerPlayer) player, NetworkHandler.UPDATE_FATIGUE, buf);
+        props.setFatigue(fatigue);
+        props.setReplenishedFatigue(replenishedFatigue);
+        props.setExtraFatigueRate(extraFatigueRate);
 
-                if (Somnia.CONFIG.fatigue.fatigueSideEffects) {
-                    int lastSideEffectStage = props.getSideEffectStage();
-                    SideEffectStage[] stages = SideEffectStage.getSideEffectStages();
+        if (props.updateFatigueCounter() >= 100) {
+            props.resetFatigueCounter();
+            FriendlyByteBuf buf = PacketByteBufs.create();
+            buf.writeDouble(fatigue);
+            ServerPlayNetworking.send((ServerPlayer) player, NetworkHandler.UPDATE_FATIGUE, buf);
 
-                    if (fatigue < stages[0].minFatigue()) {
-                        props.setSideEffectStage(-1);
-                    }
+            if (Somnia.CONFIG.fatigue.fatigueSideEffects) {
+                int lastSideEffectStage = props.getSideEffectStage();
+                SideEffectStage[] stages = SideEffectStage.getSideEffectStages();
 
-                    for (SideEffectStage stage : stages) {
-                        boolean permanent = stage.duration() < 0;
+                if (fatigue < stages[0].minFatigue()) {
+                    props.setSideEffectStage(-1);
+                }
 
-                        if (fatigue >= stage.minFatigue() && fatigue <= stage.maxFatigue()) {
-                            props.setSideEffectStage(stage.minFatigue());
+                for (SideEffectStage stage : stages) {
+                    boolean permanent = stage.duration() < 0;
 
-                            if (permanent || lastSideEffectStage < stage.minFatigue()) {
-                                MobEffect eff = Registry.MOB_EFFECT.get(new ResourceLocation(stage.potionId()));
-                                player.addEffect(new MobEffectInstance(eff, permanent ? 150 : stage.duration(), stage.amplifier()));
-                            }
+                    if (fatigue >= stage.minFatigue() && fatigue <= stage.maxFatigue()) {
+                        props.setSideEffectStage(stage.minFatigue());
+
+                        if (permanent || lastSideEffectStage < stage.minFatigue()) {
+                            MobEffect eff = Registry.MOB_EFFECT.get(new ResourceLocation(stage.potionId()));
+                            player.addEffect(new MobEffectInstance(eff, permanent ? 150 : stage.duration(), stage.amplifier()));
                         }
                     }
                 }

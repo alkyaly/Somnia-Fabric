@@ -57,16 +57,4 @@ public abstract class PlayerMixin extends LivingEntity {
     private void somnia$tailTick(CallbackInfo ci) {
         PlayerSleepTickHandler.onPlayerTick(false, (Player) (Object) this);
     }
-
-    @Inject(at = @At("HEAD"), method = "die(Lnet/minecraft/world/damagesource/DamageSource;)V") //Forge: LivingDeathEvent on ForgeEventHandler
-    private void somnia$onDeath(CallbackInfo ci) {
-        Fatigue props = Components.get((Player) (Object) this);
-
-        if (props != null) {
-            props.setFatigue(0);
-            props.setReplenishedFatigue(0);
-            props.setExtraFatigueRate(0);
-            props.setSleepOverride(false);
-        }
-    }
 }

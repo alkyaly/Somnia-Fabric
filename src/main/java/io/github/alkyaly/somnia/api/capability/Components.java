@@ -14,7 +14,7 @@ public class Components implements EntityComponentInitializer {
 
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
-        registry.registerForPlayers(FATIGUE, FatigueImpl::new, RespawnCopyStrategy.ALWAYS_COPY);
+        registry.registerForPlayers(FATIGUE, FatigueImpl::new, RespawnCopyStrategy.LOSSLESS_ONLY);
     }
 
     @Nullable

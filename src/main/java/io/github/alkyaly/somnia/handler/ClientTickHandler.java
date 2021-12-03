@@ -4,9 +4,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.alkyaly.somnia.api.capability.Components;
 import io.github.alkyaly.somnia.api.capability.Fatigue;
+import io.github.alkyaly.somnia.core.Somnia;
 import io.github.alkyaly.somnia.network.NetworkHandler;
 import io.github.alkyaly.somnia.util.SideEffectStage;
-import io.github.alkyaly.somnia.core.Somnia;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import net.fabricmc.api.EnvType;
@@ -20,13 +20,22 @@ import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.Locale;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -35,7 +44,7 @@ public final class ClientTickHandler {
     public static final ClientTickHandler INSTANCE = new ClientTickHandler();
     private static final DecimalFormat MULTIPLIER_FORMAT = new DecimalFormat("0.0");
 
-    //private static final ResourceLocation PINEAPPLE = Somnia.locate("textures/pineapple.png");
+    private static final ResourceLocation PINEAPPLE = Somnia.locate("textures/pineapple.png");
     private static final ItemStack CLOCK = new ItemStack(Items.CLOCK);
 
     private final Minecraft mc = Minecraft.getInstance();
@@ -171,13 +180,11 @@ public final class ClientTickHandler {
 
                 long eta = Math.round((remaining - sleepDuration) / (average * 20));
 
-                /* bad
-                if (SomniaClient.easterEggActive) {
+                if (Somnia.CONFIG.options.coolETASleepText) {
                     renderScaledRainbowString(pose, offsetX + 80, getETAString(eta));
                 } else {
                     renderScaledString(pose, offsetX + 80, SpeedColor.WHITE.code + getETAString(eta));
-                }*/
-                renderScaledString(pose, offsetX + 80, SpeedColor.WHITE.code + getETAString(eta));
+                }
                 renderClock(width);
             }
         }
@@ -198,20 +205,25 @@ public final class ClientTickHandler {
         }
     }
 
-    //bad
-    /*private void renderScaledRainbowString(PoseStack pose, int x, String str) {
+    private void renderScaledRainbowString(PoseStack pose, int x, String str) {
         if (mc.screen == null) return;
         pose.pushPose();
         pose.translate(x, 20, 0);
         pose.scale(1.5f, 1.5f, 1);
+
+        MutableComponent cmp = new TextComponent("");
+
         for (char xar : str.toCharArray()) {
-            int rgb = Mth.hsvToRgb((System.currentTimeMillis() % 3000) / 3000f, 0.7f, 0.9f);
-            String to = String.valueOf(xar);
-            mc.font.draw(pose, to, x, 0, rgb);
-            x += mc.font.width(to);
+            cmp.append(String.valueOf(xar));
         }
-        pose.popPose();
-    }*/
+
+        for (Component sibling : cmp.getSiblings()) {
+            ((MutableComponent) sibling).withStyle(s ->
+                    s.withColor(Mth.hsvToRgb((System.currentTimeMillis() % 4000) / 4000f, 0.7f, 0.9f))
+            );
+        }
+        mc.font.drawShadow(pose, cmp, 0, 0, Integer.MIN_VALUE);
+    }
 
     private void renderScaledString(PoseStack pose, int x, String str) {
         if (mc.screen == null) return;
@@ -233,18 +245,9 @@ public final class ClientTickHandler {
         PoseStack pose = RenderSystem.getModelViewStack();
 
         pose.pushPose();
-        /*if (SomniaClient.easterEggActive) {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderColor(1, 1, 1, 1);
-            RenderSystem.setShaderTexture(0, PINEAPPLE);
-            //stack.translate(x - 30, 30, 0);
-            stack.scale(.5f, .5f, 1);
-            GuiComponent.blit(stack, 80, 70, 0, 0, 128, 128, 128, 128);
-        } else {*/
         pose.translate(x - 10, 45, 0);
         pose.scale(4, 4, 1);
         mc.getItemRenderer().renderAndDecorateItem(CLOCK, 0, 0);
-        //}
         pose.popPose();
     }
 
@@ -276,11 +279,11 @@ public final class ClientTickHandler {
 
     @SuppressWarnings("unused")
     public enum FatigueDisplayPosition {
-        TOP_CENTER((scaledWidth, stringWidth) -> scaledWidth / 2 - stringWidth / 2, (scaledHeight, fontHeight) -> fontHeight),
+        CENTER_LEFT((scaledWidth, stringWidth) -> scaledWidth / 2 - stringWidth / 2, (scaledHeight, fontHeight) -> fontHeight),
         TOP_LEFT((scaledWidth, stringWidth) -> 10, (scaledHeight, fontHeight) -> fontHeight),
-        TOP_RIGHT((scaledWidth, stringWidth) -> scaledWidth - stringWidth - 10, (scaledHeight, fontHeight) -> fontHeight),
-        BOTTOM_CENTER((scaledWidth, stringWidth) -> scaledWidth / 2 - stringWidth / 2, (scaledHeight, fontHeight) -> scaledHeight - fontHeight - 45),
-        BOTTOM_LEFT((scaledWidth, stringWidth) -> 10, (scaledHeight, fontHeight) -> scaledHeight - fontHeight - 10),
+        TOP_RIGHT((scaledWidth, stringWidth) -> 10, (scaledHeight, fontHeight) -> scaledHeight - fontHeight - 10),
+        CENTER_RIGHT((scaledWidth, stringWidth) -> scaledWidth / 2 - stringWidth / 2, (scaledHeight, fontHeight) -> scaledHeight - fontHeight - 45),
+        BOTTOM_LEFT((scaledWidth, stringWidth) -> scaledWidth - stringWidth - 10, (scaledHeight, fontHeight) -> fontHeight),
         BOTTOM_RIGHT((scaledWidth, stringWidth) -> scaledWidth - stringWidth - 10, (scaledHeight, fontHeight) -> scaledHeight - fontHeight - 10);
 
         private final BiFunction<Integer, Integer, Integer> x;

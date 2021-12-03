@@ -1,6 +1,5 @@
 package io.github.alkyaly.somnia.handler;
 
-import io.github.alkyaly.somnia.api.capability.Components;
 import io.github.alkyaly.somnia.core.Somnia;
 import io.github.alkyaly.somnia.mixin.accessor.MinecraftServerAccessor;
 import io.github.alkyaly.somnia.network.NetworkHandler;
@@ -96,7 +95,6 @@ public class ServerTickHandler {
     }
 
     private void multiplyServerTick() {
-        levelServer.players().forEach(p -> EventHandler.tickPlayer(p, Components.get(p)));
         levelServer.tick(() -> ((MinecraftServerAccessor) levelServer.getServer()).somnia$invokeHaveTime());
         levelServer.getServer().getPlayerList().broadcastAll(new ClientboundSetTimePacket(levelServer.getGameTime(), levelServer.getDayTime(), levelServer.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)), levelServer.dimension());
     }
