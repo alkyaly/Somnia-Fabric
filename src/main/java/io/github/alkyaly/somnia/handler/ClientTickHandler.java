@@ -23,7 +23,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -288,7 +287,7 @@ public final class ClientTickHandler {
         private final BiFunction<Integer, Integer, Integer> x;
         private final BiFunction<Integer, Integer, Integer> y;
 
-        FatigueDisplayPosition(BiFunction<Integer, Integer, Integer> y, BiFunction<Integer, Integer, Integer> x) {
+        FatigueDisplayPosition(BiFunction<Integer, Integer, Integer> x, BiFunction<Integer, Integer, Integer> y) {
             this.x = x;
             this.y = y;
         }

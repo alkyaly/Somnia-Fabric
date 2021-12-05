@@ -18,8 +18,7 @@ public class SomniaConfig implements Config {
     public Timings timings = new Timings();
 
     public static class Fatigue {
-        //Fatigue
-        @Comment("The fatigue counter's position. Accepted values: CENTER_LEFT, TOP_LEFT, TOP_RIGHT, CENTER_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.")
+        @Comment("The fatigue counter's position. Accepted values: TOP_CENTER, TOP_LEFT, TOP_RIGHT, BOTTOM_CENTER, BOTTOM_LEFT, BOTTOM_RIGHT.")
         public String displayFatigue = "BOTTOM_RIGHT";
         @Comment("Simplifies the numerical fatigue counter to words")
         public boolean simpleFatigueDisplay = false;
@@ -55,7 +54,6 @@ public class SomniaConfig implements Config {
     }
 
     public static class Logic {
-        //Logic
         @Comment("""
                 If the time difference (mc) between multiplied ticking is greater than this,
                     //the simulation multiplier is lowered. Otherwise, it's increased.
@@ -71,7 +69,6 @@ public class SomniaConfig implements Config {
     }
 
     public static class Options {
-        //Options
         @Comment("Slightly slower sleep start/end")
         public boolean fading = true;
         @Comment("Let the player sleep even when there are monsters nearby")
@@ -86,11 +83,10 @@ public class SomniaConfig implements Config {
         public String somniaGuiClockPosition = "right";
         @Comment("The item used to select wake time")
         public String wakeTimeSelectItem = "minecraft:clock";
-        public boolean coolETASleepText = true;
+        public boolean coolETASleepText = false;
     }
 
     public static class Performance {
-        //Performance
         @Comment("Disables mob spawning while you sleep")
         public boolean disableCreatureSpawning = false;
         @Comment("Disable rendering while you're asleep")
@@ -98,7 +94,6 @@ public class SomniaConfig implements Config {
     }
 
     public static class Timings {
-        //Timings
         @Comment("Specifies the start of the period in which the player can enter sleep. Range: 0 ~ 24000.")
         public int enterSleepStart = 0;
         @Comment("Specifies the end of the period in which the player can enter sleep. Range: 0 ~ 24000.")
